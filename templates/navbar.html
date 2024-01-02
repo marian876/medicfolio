@@ -1,0 +1,70 @@
+{% load static %}
+
+{% url 'index' as index %}
+{% url 'login' as login %}
+{% url 'register' as register %}
+{% url 'logout' as logout %}
+{% url 'dispensers:dispenser' as dispenser %}
+
+<nav class="navbar navbar-expand-lg custom-navbar-bg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">
+            <img src="{% static 'images/icono.png' %}" alt="MedicFolio Logo" style="height: 40px;">
+        </a>       
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav me-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Medicamentos
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'products:product_list_short' %}"><i class="fas fa-tags"></i> Resumen</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_list' %}"><i class="fas fa-boxes"></i> Inventario</a></li>
+                           <li><a class="dropdown-item" href="{{ dispenser }}"><i class="fas fa-cart-plus"></i> Carrito de retiro </a></li>
+                           <li><a class="dropdown-item" href="{% url 'stock:agregar_compra' %}"><i class="fas fa-box-open"></i> Agregar Compra </a></li>
+                           <li><a class="dropdown-item" href="{% url 'products:new_product' %}"><i class="fas fa-plus-circle"></i> Nuevo Producto </a></li>
+
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownDatosGenerales" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Datos Generales
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownDatosGenerales">
+                            <li><a class="dropdown-item" href="{% url 'stock:pharmacy_list' %}"><i class="fas fa-store"></i> Farmacias</a></li>
+                            <a class="dropdown-item" href="{% url 'products:specialty_list' %}"><i class="fas fa-stethoscope"></i> Especialidades</a>
+                            <li><a class="dropdown-item" href="{% url 'products:presentation_list' %}"><i class="fas fa-pills"></i> Presentaciones</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+            </div>
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                <li><a class="nav-link text-white" href="{{ dispenser }}">
+                    <i class="fas fa-cart-plus"></i> Carrito
+                    <span class="badge bg-secondary">{{ cart_item_count }}</span>
+                    <span class="badge bg-secondary">{{ dispenser.products.count }}</span>
+                </a></li>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                    <a class="nav-link text-white {% if request.path == logout %}active{% endif %}" href="{{ logout }}">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </a>
+                {% else %}
+                    <a class="nav-link text-white {% if request.path == login %}active{% endif %}" href="{{ login }}">
+                        <i class="fas fa-sign-in-alt"></i> Ingresar
+                    </a>
+                    <a class="nav-link text-white {% if request.path == register %}active{% endif %}" href="{{ register }}">
+                        <i class="fas fa-user-plus"></i> Registrarse
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+

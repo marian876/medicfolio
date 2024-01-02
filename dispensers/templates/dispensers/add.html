@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load product_extras %}
+{% load dispenser_extras %}
+
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Pedido de retiro cargado' %}
+    <div class="row mt-4 align-items-center">
+        <div class="col-md-6 text-center">
+            {% if product.imagen_caja %}
+                <img src="{{ product.imagen_caja.url }}" alt="Imagen del producto" class="img-fluid mx-auto d-block">
+            {% endif %}
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-start">
+            <div class="h3 font-weight-bold text-success">
+                {{quantity | quantity_add_format}} para retirar
+            </div>
+            <div>
+                <a href="{% url 'products:product' product.slug %}" class="h5">
+                    {{product.nombre_local}}
+                </a>
+            </div>
+            <div class="font-weight-bold text-danger">
+                {{ product.precio | price_format}}
+            </div>
+            <div class="mt-2">
+                <a href="{% url 'dispensers:dispenser' %}" class="btn btn-warning">Ver retiros</a>
+            </div>
+            <div class="mt-2">
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">Seguir seleccionando</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

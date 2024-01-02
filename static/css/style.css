@@ -1,0 +1,36 @@
+h1{
+    color:#094460;
+    text-align:center;
+}
+
+.custom-navbar-bg {
+    background-color: #82e7ee; 
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #0c5573 !important;
+}
+
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #012237 !important;
+}
+
+.btn-remove {
+    font-size: smaller;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+}
+
+  .card-container .card {
+    margin-bottom: 10px; /* Espacio entre tarjetas */
+  }
+
+  .card-container .card-body {
+    padding: 0.5rem; /* Espacio interno en la tarjeta */
+  }
+
+  .card-container .card img {
+    max-height: 50px; /* Altura máxima de la imagen */
+  }

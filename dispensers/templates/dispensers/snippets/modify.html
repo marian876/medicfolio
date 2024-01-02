@@ -1,0 +1,26 @@
+<!-- snippets/modify.html -->
+<form action="{% url 'dispensers:actualizar_cantidad' %}" method="post" class="form-inline">
+    {% csrf_token %}
+    <input type="hidden" name="product_id" value="{{ product.id }}">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cambiarCantidad(false, '{{ product.id }}')">-</button>
+        </div>
+        <input type="text" class="form-control form-control-sm" name="quantity" value="{{ product.quantity }}" readonly>
+        <div class="input-group-append">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cambiarCantidad(true, '{{ product.id }}')">+</button>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Modificar</button>
+</form>
+
+<script>
+    function cambiarCantidad(esIncremento, productId) {
+        let input = document.querySelector(`input[name='quantity'][data-product-id='${productId}']`);
+        let cantidadActual = parseInt(input.value);
+        cantidadActual = esIncremento ? cantidadActual + 1 : cantidadActual - 1;
+        // Asegúrate de que la cantidad no sea menor que 1
+        if (cantidadActual < 1) cantidadActual = 1;
+        input.value = cantidadActual;
+    }
+</script>

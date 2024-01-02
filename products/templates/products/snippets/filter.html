@@ -1,0 +1,21 @@
+<form method="get" action="{% url 'products:product_list_short' %}" class="form-inline">
+    <div class="form-group">
+        <label for="id_especialidad" style="margin-right: 5px;">{{ filter_form.especialidad.label }}</label>
+        {{ filter_form.especialidad }}
+        <span style="margin-right: 10px;"></span>
+
+        <label for="id_sin_existencia" style="margin-right: 5px;">{{ filter_form.sin_existencia.label }}</label>
+        {{ filter_form.sin_existencia }}
+        <span style="margin-right: 10px;"></span>
+
+        <label for="id_uso_cotidiano" style="margin-right: 5px;">{{ filter_form.uso_cotidiano.label }}</label>
+        {{ filter_form.uso_cotidiano }}
+        <span style="margin-right: 10px;"></span>
+
+        <label for="id_venta_controlada" style="margin-right: 5px;">{{ filter_form.venta_controlada.label }}</label>
+        {{ filter_form.venta_controlada }}
+        <span style="margin-right: 20px;"></span>
+
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>

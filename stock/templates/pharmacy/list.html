@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Farmacias' %}
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="text-end">
+                <a href="{% url 'stock:pharmacy_add' %}" class="btn btn-primary">Agregar Farmacia</a>
+            </div>
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Web</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for farmacia in farmacias %}
+                <tr>
+                    <td>{{ farmacia.nombre }}</td>
+                    <td>{{ farmacia.web }}</td>
+                    <td>
+                        <a href="{% url 'stock:pharmacy_edit' farmacia.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'stock:pharmacy_delete' farmacia.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>
+{% endblock %}

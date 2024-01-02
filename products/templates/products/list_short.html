@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resumen de productos{% endblock title %}
+
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Resumen de productos' %}
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            {% include "products/snippets/filter.html" %}  
+            {% include "products/snippets/list_short.html" %}  
+        </div>
+    </div>
+</div>
+{% endblock content %}

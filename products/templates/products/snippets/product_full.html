@@ -1,0 +1,105 @@
+<!-- snippets-new_product.html -->
+
+<form class="needs-validation" novalidate method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-3"> 
+        <div class="col-md-6">
+            {{ form.nombre_local.label_tag }} 
+            {{ form.nombre_local }}
+        </div>
+        <div class="col-md-6">
+            {{ form.existencia.label_tag }}
+            {{ form.existencia }}
+        </div>
+        <div class="col-md-6">
+            {{ form.venta_controlada.label_tag }}
+            {{ form.venta_controlada }}
+        </div>
+        <div class="col-md-6">
+            {{ form.uso_cotidiano.label_tag }}
+            {{ form.uso_cotidiano }}
+        </div>
+        <div class="col-md-6">
+            <label for="id_presentacion">Presentación:</label>
+            <select name="presentacion" id="id_presentacion" class="form-control">
+                {% for presentacion in presentaciones %}
+                    <option value="{{ presentacion.id }}">{{ presentacion.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            {{ form.cantidad_caja.label_tag }} 
+            {{ form.cantidad_caja }}
+        </div>
+        <div class="col-md-6">
+            {{ form.precio.label_tag }} 
+            {{ form.precio }}
+        </div>
+        <div class="col-md-6">
+            <label for="id_especialidad">Especialidad:</label>
+            <select name="especialidad" id="id_especialidad" class="form-control">
+                {% for especialidad in especialidades %}
+                    <option value="{{ especialidad.id }}">{{ especialidad.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12">
+            {{ form.compuesto_principal.label_tag }} 
+            {{ form.compuesto_principal }}
+        </div>
+        <div class="col-12">
+            {{ form.usos.label_tag }} 
+            {{ form.usos }}
+        </div>
+        <div class="col-12">
+            {{ form.posologia.label_tag }} 
+            {{ form.posologia }}
+        </div>
+        <div class="col-12">
+            {{ form.descripcion.label_tag }} 
+            {{ form.descripcion }}
+        </div>
+        <div class="col-12">
+            {{ form.embarazo.label_tag }}
+            {{ form.embarazo }}
+        </div>
+        <div class="col-12">
+            {{ form.lactancia.label_tag }}
+            {{ form.lactancia }}
+        </div>
+        <div class="col-12">
+            {{ form.contraindicaciones.label_tag }}
+            {{ form.contraindicaciones }}
+        </div>
+        <div class="col-12">
+            {{ form.precauciones.label_tag }}
+            {{ form.precauciones }}
+        </div>
+        <div class="col-12">
+            {{ form.reacciones_adversas.label_tag }}
+            {{ form.reacciones_adversas }}
+        </div>
+        <div class="col-12">
+            {{ form.interacciones.label_tag }}
+            {{ form.interacciones }}
+        </div>
+        <div class="col-12">
+            {{ form.codigo_barras.label_tag }}
+            {{ form.codigo_barras }}
+        </div>
+        <div class="col-12">
+            {{ form.fabricante.label_tag }} 
+            {{ form.fabricante }}
+        </div>
+        <div class="col-12">
+            {{ form.imagen_caja.label_tag }} 
+            {{ form.imagen_caja }}
+        </div>
+    </div>
+    <button class="btn btn-primary mt-2" type="submit">{{ button_label|default:"Guardar" }}</button>
+    {% if request.META.HTTP_REFERER %}
+    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary mt-2">Volver</a>
+    {% else %}
+    <a href="{% url 'products:product_list' %}" class="btn btn-secondary mt-2" >Volver</a>
+    {% endif %}
+</form>

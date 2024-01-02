@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Cargar la compra de productos' %}
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <form method="post" class="mt-3">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+                <div class="form-group mt-4 d-flex align-items-center">
+                    <label for="id_producto" class="me-2">Producto</label>
+                    {{ form.producto }}
+                </div>
+                
+                <div class="form-group mt-4">
+                    <label for="id_cantidad">Cantidad de Pastillas</label>
+                    {{ form.cantidad }}
+                </div>
+                
+                <div class="form-group mt-4 d-flex align-items-center">
+                    <label for="id_lugar_compra" class="me-2">Lugar de Compra</label>
+                    {{ form.lugar_compra }}
+                </div>
+                
+                <div class="form-group mt-4">
+                    <label for="{{ form.precio_compra.id_for_label }}">Precio de la caja </label>
+                    <div class="precio">
+                        {{ form.precio_compra }} Gs.
+                    </div>
+                </div>             
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Volver al listado</a>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% load product_extras %}
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card h-100">
+  {% if product.imagen_caja %}
+      <img src="{{product.imagen_caja.url}}" alt="Imagen de la caja" height='150'>
+  {% endif %}
+  <div class="card-body">
+      <h5 class="card-title">{{ product.nombre_local }}</h5>
+      <p class="card-text"> {{ product.precio | price_format }} </p>
+      <p class="card-text"> Existencia: {{ product.existencia }} </p>
+      <p class="card-text mb-2"> Uso periódico: 
+          {% if product.uso_actual %}
+              Sí
+          {% else %}
+              No
+          {% endif %}
+      </p>
+      <div class="mb-2">
+          {% include "dispensers/snippets/add.html" %}
+      </div>
+      <a href="{% url 'stock:agregar_compra' %}?producto_id={{ product.id }}" class="btn btn-success mb-2">Agregar Compra</a>
+      <a href="{% url 'products:product' product.slug %}" class="btn btn-primary ">Más datos</a>
+  </div>
+</div>
+
+

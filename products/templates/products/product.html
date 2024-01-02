@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load product_extras %}
+
+
+{% block content %}
+<div class="container">
+{% include "snippets/title.html" with title=product.nombre_local %}
+    <div class="row mt-4 align-items-center">
+        <div class="col-md-6 text-center">
+            {% if product.imagen_caja %}
+                <img src="{{ product.imagen_caja.url }}" alt="Foto de la caja" class="img-fluid mx-auto d-block">
+            {% endif %}
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-start">
+            <div>
+                <p><strong>Existencia: </strong> {{ product.existencia }}</p>
+                <p><strong>Uso actual: </strong> {{ product.uso_cotidiano|yesno:"Sí,No" }}</p>
+                {% include "dispensers/snippets/add.html" %}
+            </div>
+            <div class="mt-2">
+                <a href="{% url 'stock:agregar_compra' %}?producto_id={{ product.id }}" class="btn btn-success">Cargar Existencia</a>
+            </div>
+            <div class="mt-2">
+                <a href="{% url 'products:edit_product' product.slug %}" class="btn btn-primary">Editar</a>
+                <form action="{% url 'products:delete_product' product.slug %}" method="post" style="display: inline-block; margin-top: 5px;">
+                    {% csrf_token %}
+                    <input type="submit" value="Eliminar" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                </form>
+            </div>
+            <div class="form-group mt-4">
+                {% if request.META.HTTP_REFERER %}
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
+                {% else %}
+                    <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Volver</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card my-4">
+        <div class="card-body">
+            <p class="mb-0"><strong>Venta Controlada:</strong> {{ product.venta_controlada|yesno:"Sí,No" }}</p>
+            <p class="mb-0"><strong>Precio:</strong> {{ product.precio | price_format }}</p>
+            <p class="mb-0"><strong>Compuesto Principal:</strong> {{ product.compuesto_principal }}</p>
+            <p class="mb-0"><strong>Presentación:</strong> {{ product.presentacion }}</p>
+            <p class="mb-0"><strong>Cantidad por caja:</strong> {{ product.cantidad_caja }}</p>
+            <p class="mb-0"><strong>Especialidad:</strong> {{ product.get_especialidades_display }}</p>
+            <p class="mb-0"><strong>Descripción:</strong> {{ product.descripcion }}</p>
+        </div>
+    </div>
+            {% if product.usos %}
+                <p><strong>Usos: </strong> {{ product.usos }}</p>
+            {% endif %}
+            {% if product.posologia %}
+                <p><strong>Posología: </strong> {{ product.posologia }}</p>
+            {% endif %}
+            {% if product.embarazo %}
+                <p><strong>Embarazo: </strong> {{ product.embarazo }}</p>
+            {% endif %}
+            {% if product.lactancia %}
+                <p><strong>Lactancia: </strong> {{ product.lactancia }}</p>
+            {% endif %}
+            {% if product.contraindicaciones %}
+                <p><strong>Contraindicaciones: </strong> {{ product.contraindicaciones }}</p>
+            {% endif %}
+            {% if product.precauciones %}
+                <p><strong>Precauciones: </strong> {{ product.precauciones }}</p>
+            {% endif %}
+            {% if product.reacciones_adversas %}
+                <p><strong>Reacciones Adversas: </strong> {{ product.reacciones_adversas }}</p>
+            {% endif %}
+            {% if product.interacciones %}
+                <p><strong>Interacciones: </strong> {{ product.interacciones }}</p>
+            {% endif %}
+            {% if product.fabricante %}
+                <p><strong>Fabricante: </strong> {{ product.fabricante }}</p>
+            {% endif %}
+            {% if product.pais %}
+                <p><strong>País: </strong> {{ product.pais }}</p>
+            {% endif %}
+            {% if product.codigo_barras %}
+                <p><strong>Código de Barras: </strong> {{ product.codigo_barras }}</p>
+            {% endif %}
+            {% if product.creado_el %}
+                <p><strong>Creado el: </strong> {{ product.creado_el }}</p>
+            {% endif %}
+        </div> 
+    </div>
+
+{% endblock content %}

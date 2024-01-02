@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Ingreso{% endblock title %}
+
+{% block content %}
+    <div class="col">
+        <h2>Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="text" name="username" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                <small id="helpId" class="text-muted"></small>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" name="password" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                <small id="helpId" class="text-muted"></small>
+                </div>
+
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Modificar cantidad del producto' %}
+    <div class="row mt-4 align-items-center">
+        <div class="col-md-6 text-center">
+            {% if product.imagen_caja %}
+                <img src="{{ product.imagen_caja.url }}" alt="Imagen del producto" class="img-fluid mx-auto d-block" style="max-height: 250px; width: auto;">
+            {% endif %}
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-start">
+            <div>
+                <a href="{% url 'products:product' product.slug %}" class="h5">
+                    {{product.nombre_local}}
+                </a>
+                <p class="card-text">Existencia actual: {{ product.existencia }}</p>
+                <form action="{% url 'dispensers:modify' product.id %}" method="post">
+            </div>
+            <form action="{% url 'dispensers:modify' product.id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group mt-2">
+                    <label for="quantity">Cantidad:</label>
+                    <input type="number" id="quantity" name="quantity" class="form-control" 
+                           value="{{ current_quantity }}" min="1" max="{{ max_quantity }}" 
+                           {% if max_quantity == 0 %}disabled{% endif %} required>              </div>
+                <button type="submit" class="btn btn-primary mt-2">Actualizar</button>
+            </form>
+            <div class="form-group mt-4">
+                {% if request.META.HTTP_REFERER %}
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
+                {% else %}
+                    <a href="{% url 'dispensers:dispenser' %}" class="btn btn-secondary">Volver al Carrito</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

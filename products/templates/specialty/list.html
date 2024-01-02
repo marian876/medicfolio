@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Especialidades' %}
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="text-end">
+                <a href="{% url 'products:specialty_add' %}" class="btn btn-primary">Agregar Especialidad</a>
+            </div>
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for specialty in specialty_list %}
+                    <tr>
+                        <td>{{ specialty.nombre }}</td>
+                        <td>
+                            <a href="{% url 'products:specialty_edit' specialty.id %}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="{% url 'products:specialty_delete' specialty.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

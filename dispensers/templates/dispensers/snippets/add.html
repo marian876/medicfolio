@@ -1,0 +1,57 @@
+<form action="{% url 'dispensers:add' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="product_id" value="{{ product.id }}">
+    <div class="d-flex align-items-center">
+        <button type="button" class="btn btn-info remove">-</button>
+        <input type="text" value="{{ product.existencia|default_if_none:"0" |yesno:"1,0" }}" class="form-control text-center quantity" name="quantity" style="width: 60px;" readonly pattern="\d*">
+        <button type="button" class="btn btn-info add">+</button>
+    </div>
+    <input type="hidden" name="product_existence" value="{{ product.existencia }}">
+    <button type="submit" class="btn btn-warning" {% if product.existencia|default_if_none:0 <= 0 %}disabled{% endif %}>  Agregar a retirar  </button>
+</form>
+
+<script>
+    document.querySelectorAll('.add').forEach(function(addButton) {
+        addButton.addEventListener('click', function(event) {
+            event.stopImmediatePropagation();
+            const quantityInput = this.parentElement.querySelector('.quantity');
+            const maxQuantity = parseInt(this.parentElement.parentElement.querySelector('[name="product_existence"]').value);
+            let currentQuantity = parseInt(quantityInput.value);
+            if (currentQuantity < maxQuantity) {
+                quantityInput.value = currentQuantity + 1;
+            }
+            updateSubmitButtonState(quantityInput, maxQuantity);
+        });
+    });
+    
+    document.querySelectorAll('.remove').forEach(function(removeButton) {
+        removeButton.addEventListener('click', function(event) {
+            event.stopImmediatePropagation();
+            const quantityInput = this.parentElement.querySelector('.quantity');
+            let currentQuantity = parseInt(quantityInput.value);
+            if (currentQuantity > 1) {
+                quantityInput.value = currentQuantity - 1;
+            }
+            updateSubmitButtonState(quantityInput, currentQuantity);
+        });
+    });
+    
+    function updateSubmitButtonState(quantityInput, maxQuantity) {
+        const submitButton = quantityInput.parentElement.parentElement.querySelector('[type="submit"]');
+        if (parseInt(quantityInput.value) <= 0 || parseInt(quantityInput.value) > maxQuantity) {
+            submitButton.disabled = true;
+        } else {
+            submitButton.disabled = false;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const initialQuantityInput = document.querySelector('.quantity');
+        if (initialQuantityInput) {
+            const maxQuantity = parseInt(initialQuantityInput.parentElement.parentElement.querySelector('[name="product_existence"]').value);
+            initialQuantityInput.value = "1"; // Set initial value to 1
+            updateSubmitButtonState(initialQuantityInput, maxQuantity);
+        }
+    });
+    
+</script>

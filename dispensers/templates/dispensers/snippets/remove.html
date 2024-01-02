@@ -1,0 +1,5 @@
+<form action="{% url 'dispensers:remove' %}" method="post" style="margin: 0; padding: 0;">
+    {% csrf_token %}
+    <input type="hidden" name="product_id" value="{{product.id}}"> 
+    <button type="submit" class="btn btn-link text-danger" style="font-size: smaller; text-decoration: none; margin: 0; padding: 0;">Eliminar</button>
+</form>

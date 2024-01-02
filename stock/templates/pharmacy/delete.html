@@ -1,0 +1,18 @@
+<!-- farmacias/delete.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    {% include "snippets/title.html" with title='Eliminar Farmacia' %}
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <form method="post">
+                {% csrf_token %}
+                <p>¿Estás seguro de que quieres eliminar "{{ farmacia.nombre }}"?</p>
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+                <a href="{% url 'stock:pharmacy_list' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
