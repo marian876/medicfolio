@@ -1,15 +1,5 @@
 {% load product_extras %}
 
-{% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
-
 <div class="card h-100">
   {% if product.imagen_caja %}
       <img src="{{product.imagen_caja.url}}" alt="Imagen de la caja" height='150'>
