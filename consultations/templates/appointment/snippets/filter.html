@@ -1,0 +1,17 @@
+<form method="get" class="form-inline" id="filter-form">
+    {{ filterset.form.pendiente.label_tag }}
+    {{ filterset.form.pendiente }}
+</form>
+
+<form method="get" class="input-group mb-3 mt-2" id="search-form">
+    <input type="text" name="search" class="form-control" placeholder="Buscar" value="{{ request.GET.search }}">
+    <div class="input-group-append">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Buscar</button>
+        <a href="{% url 'consultations:appointment_create' %}" class="btn btn-primary ms-2">Nueva</a>
+    </div>
+    {% for key, value in filterset.data.items %}
+        {% if key != 'search' %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+    {% endfor %}
+</form>

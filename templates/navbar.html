@@ -22,11 +22,20 @@
                             Medicamentos
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'medication:medication_list' %}"><i class="fas fa-tags"></i> Actual</a></li>
                             <li><a class="dropdown-item" href="{% url 'products:product_list_short' %}"><i class="fas fa-tags"></i> Resumen</a></li>
                             <li><a class="dropdown-item" href="{% url 'products:product_list' %}"><i class="fas fa-boxes"></i> Inventario</a></li>
-                           <li><a class="dropdown-item" href="{{ dispenser }}"><i class="fas fa-cart-plus"></i> Carrito de retiro </a></li>
-                           <li><a class="dropdown-item" href="{% url 'stock:agregar_compra' %}"><i class="fas fa-box-open"></i> Agregar Compra </a></li>
-                           <li><a class="dropdown-item" href="{% url 'products:new_product' %}"><i class="fas fa-plus-circle"></i> Nuevo Producto </a></li>
+                            <li><a class="dropdown-item" href="{% url 'consultations:prescription_list' %}"><i class="fas fa-pills"></i> Prescripciones</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownDatosGenerales" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Expediente
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownDatosGenerales">
+                            <li><a class="dropdown-item" href="{% url 'consultations:appointment_list' %}"><i class="far fa-calendar-alt"></i> Citas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'consultations:consultation_list' %}"><i class="fas fa-stethoscope"></i> Consultas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'consultations:analysis_list' %}"><i class="fas fa-microscope"></i> Análisis</a></li>
 
                         </ul>
                     </li>
@@ -35,8 +44,9 @@
                             Datos Generales
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownDatosGenerales">
+                            <li><a class="dropdown-item" href="{% url 'consultations:doctor_list' %}"><i class="fas fa-stethoscope"></i> Doctores</a></li>
                             <li><a class="dropdown-item" href="{% url 'stock:pharmacy_list' %}"><i class="fas fa-store"></i> Farmacias</a></li>
-                            <a class="dropdown-item" href="{% url 'products:specialty_list' %}"><i class="fas fa-stethoscope"></i> Especialidades</a>
+                            <li><a class="dropdown-item" href="{% url 'products:specialty_list' %}"><i class="fas fa-stethoscope"></i> Especialidades</a></li>
                             <li><a class="dropdown-item" href="{% url 'products:presentation_list' %}"><i class="fas fa-pills"></i> Presentaciones</a></li>
                         </ul>
                     </li>

@@ -2,15 +2,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include "snippets/title.html" with title='Agregar Especialidad' %}
 <div class="container">
-    {% include "snippets/title.html" with title='Agregar Especialidad' %}
     <div class="row justify-content-center">
         <div class="col-md-11">
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <a href="{% url 'stock:pharmacy_list' %}" class="btn btn-secondary">Volver</a>
+                <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
             </form>
         </div>
     </div>

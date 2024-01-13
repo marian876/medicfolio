@@ -1,7 +1,5 @@
 from django.conf import settings
-
 from django.db import models
-
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
@@ -24,6 +22,8 @@ class Profile(models.Model):
     enfermedades_base = models.TextField("Enfermedades de base", default='')
     cirugias = models.TextField("Cirugías", default='')
     enfermedades_familiares = models.TextField("Enfermedades familiares", default='')
+    foto = models.ImageField(upload_to='profiles/', null=True, blank=True)
+
     class Meta:
-        verbose_name = ("Perfíl")
-        verbose_name_plural = ("Perfiles")
+        verbose_name = "Perfil"
+        verbose_name_plural = "Perfiles"

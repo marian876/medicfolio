@@ -1,5 +1,3 @@
-<!-- snippets-new_product.html -->
-
 <form class="needs-validation" novalidate method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row g-3"> 
@@ -37,9 +35,11 @@
         </div>
         <div class="col-md-6">
             <label for="id_especialidad">Especialidad:</label>
-            <select name="especialidad" id="id_especialidad" class="form-control">
-                {% for especialidad in especialidades %}
-                    <option value="{{ especialidad.id }}">{{ especialidad.nombre }}</option>
+            <select name="especialidad" id="id_especialidad" class="form-control" multiple>
+                {% for specialty_name in specialty_names %}
+                    <p>{{ specialty_name }}</p>
+                {% empty %}
+                    <p>No specialties assigned.</p>
                 {% endfor %}
             </select>
         </div>
@@ -96,10 +96,7 @@
             {{ form.imagen_caja }}
         </div>
     </div>
-    <button class="btn btn-primary mt-2" type="submit">{{ button_label|default:"Guardar" }}</button>
-    {% if request.META.HTTP_REFERER %}
-    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary mt-2">Volver</a>
-    {% else %}
-    <a href="{% url 'products:product_list' %}" class="btn btn-secondary mt-2" >Volver</a>
-    {% endif %}
+    <button class="btn btn-sm btn-primary mt-2" type="submit">{{ button_label|default:"Guardar" }}</button>
+    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
+
 </form>

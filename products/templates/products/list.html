@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{title}}{% endblock title %}
+{% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-    <div class="container">
-        {% include "snippets/title.html" with title='Listado de productos' %}
-        <div class="row justify-content-center">
-            <div class="col-md-11">
-                {% include "products/snippets/search.html" %}
-                {% include "products/snippets/list.html" %}
+{% include "snippets/title.html" with title='Listado de productos' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            {% include "products/snippets/filter.html" %}  
+            <div class="row">
+                {% for object in filter.qs %}
+                    <div class="col-3 mt-5">
+                        {% include "products/snippets/product.html" with product=object %}
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

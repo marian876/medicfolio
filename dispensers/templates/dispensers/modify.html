@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include "snippets/title.html" with title='Modificar cantidad del producto' %}
 <div class="container">
-    {% include "snippets/title.html" with title='Modificar cantidad del producto' %}
     <div class="row mt-4 align-items-center">
         <div class="col-md-6 text-center">
             {% if product.imagen_caja %}
@@ -28,9 +28,9 @@
             </form>
             <div class="form-group mt-4">
                 {% if request.META.HTTP_REFERER %}
-                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
                 {% else %}
-                    <a href="{% url 'dispensers:dispenser' %}" class="btn btn-secondary">Volver al Carrito</a>
+                    <a href="{% url 'dispensers:dispenser' %}" class="btn btn-sm btn-secondary">Volver al Carrito</a>
                 {% endif %}
             </div>
         </div>

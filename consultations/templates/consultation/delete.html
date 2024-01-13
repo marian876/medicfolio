@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Eliminar Doctor' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <form method="post">
+                {% csrf_token %}
+                <p>¿Estás seguro de que quieres eliminar "{{ doctor.nombre }}"?</p>
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+                <a href="{% url 'consultations:doctor_list' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

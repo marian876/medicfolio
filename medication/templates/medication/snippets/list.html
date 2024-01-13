@@ -1,0 +1,58 @@
+<div class="container mt-3">
+{% if object_list|length > 0 %}
+    {% for product in object_list %}
+        <div class="card mb-1 shadow-sm">
+            <div class="row g-0 align-items-center">
+                <div class="col-md-2 d-flex justify-content-center">
+                    <img src="{{ product.imagen_caja.url }}" class="img-fluid rounded-start" alt="{{ product.nombre_local }}" style="max-height: 50px; width: auto;">
+                </div>
+                <div class="col-md-10">
+                    <div class="card-body p-2">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h6 class="card-title mb-0">{{ product.nombre_local }}</h6>
+                                <p class="card-text">
+                                    <small class="text-muted">Existencia: 
+                                        <span class="{% if product.existencia <= 0 %}text-danger{% else %}text-success{% endif %}">
+                                            {{ product.existencia }}
+                                        </span>
+                                    </small>
+                                </p>
+                            </div>
+                            {% if product.prescriptions.exists %}
+                                {% with prescription=product.prescriptions.first %}
+                                    <div class="col-md-5">
+                                        <p class="card-text mb-0">
+                                            Dosis: {{ prescription.dosis }} por día  <br>
+                                            {{ prescription.frecuencia }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                                <a class="dropdown-item text-primary" href="{{ prescription.get_absolute_url }}">Prescripción: {{ prescription.id }}</a>
+                                                <!-- Botón de carga de compra -->
+                                                <a class="dropdown-item text-success" href="{% url 'stock:agregar_compra' %}?producto_id={{ product.id }}">Cargar Compra</a>
+                                                {% if product.existencia > 0 %}
+                                                    <li><a class="dropdown-item text-danger" href="{% url 'dispensers:modify' product.id %}">Retirar</a></li>
+                                                {% else %}
+                                                    <li><a class="dropdown-item disabled" tabindex="-1" aria-disabled="true">Retirar (No disponible)</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No hay productos con prescripciones activas.</p>
+{% endif %}
+</div>

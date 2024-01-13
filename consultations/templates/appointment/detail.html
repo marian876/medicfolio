@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title="Detalles de la Cita" %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ appointment.doctor.nombre }}</h5>
+                    <p class="card-text">
+                        Fecha y Hora: {{ appointment.fecha_hora }}<br>
+                        Motivo: {{ appointment.motivo }}<br>
+                        Costo: {{ appointment.costo }}<br>
+                        Acompañante: {{ appointment.acompanante }}<br>
+                        Pendiente: {{ appointment.pendiente|yesno:"Sí,No" }}<br>
+                        Días para la siguiente cita: {{ appointment.cita_posterior }}<br>
+                        Nota de cita: {{ appointment.nota }}<br>
+                        {% if consultation %}
+                            Diagnóstico: {{ consultation.diagnostico }}<br>
+                            Notas de Consulta: {{ consultation.notas }}<br>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

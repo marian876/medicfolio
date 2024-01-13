@@ -25,14 +25,12 @@ class Specialty(models.Model):
     def __str__(self):
         return self.nombre
 
-class Product(models.Model):
-    
+class Product(models.Model):    
     nombre_local = models.CharField("Nombre", max_length=50, unique=True)
     existencia = models.PositiveBigIntegerField("Existencia en Inventario")
     uso_cotidiano=models.BooleanField("Usado actualmente", default=True)
     venta_controlada = models.BooleanField("Venta Controlada", default=False)
     presentacion = models.ForeignKey(Presentation, on_delete=models.SET_NULL, null=True, blank=True)
-    
     cantidad_caja=models.PositiveBigIntegerField("Cantidad por caja", default=1)
     precio = models.PositiveBigIntegerField("Precio", default=0)
     compuesto_principal = models.TextField("Compuesto Principal", max_length=100, blank=True) # Debe ser una lista desplegable
@@ -56,7 +54,11 @@ class Product(models.Model):
     slug=models.SlugField(null=True, blank=True, unique=True)
     creado_el = models.DateTimeField("Creado el", auto_now_add=True)
     
-
+    @property
+    def prescripcion_activa(self):
+        # Esto asume que existe al menos una prescripción activa para el producto
+        return self.prescriptions.filter(activa=True).exists()
+    
     @property
     def precio_por_unidad(self):
         return round(self.precio / self.cantidad_caja) if self.cantidad_caja else 0

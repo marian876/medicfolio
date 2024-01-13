@@ -22,17 +22,67 @@ def add(request):
             quantity=quantity
         )
         messages.success(request, "Producto agregado para retirar")
-        return redirect('products:product_list')  # Redirigir a la página de origen o a otra relevante
+        return redirect('products:product_list')  
     else:
         messages.error(request, "Cantidad solicitada excede la existencia.")
         return redirect('products:product_list') 
 
-def remove(request):
-    dispenser = get_or_create_dispenser(request)
-    product = get_object_or_404(Product, pk=request.POST.get('product_id'))
+def add_multiple_products(request):
+    if request.method == 'POST':
+        # Obtén el dispenser del usuario
+        dispenser = get_or_create_dispenser(request)
 
-    dispenser.products.remove(product)
+        # Obtén el número de días del formulario
+        days = int(request.POST.get('days', 1))
+
+        # Obtén los productos con prescripción activa
+        active_products = Product.objects.filter(prescriptions__activa=True)
+
+        for product in active_products:
+            # Obtén la prescripción activa
+            prescription = product.prescriptions.filter(activa=True).first()
+
+            if not prescription:
+                messages.error(request, f"No hay prescripción activa para {product.nombre_local}.")
+                continue
+
+            # Calcula la cantidad total a retirar
+            total_quantity = prescription.dosis * days
+
+            if total_quantity > product.existencia:
+                messages.error(request, f"No hay suficiente existencia para {product.nombre_local}.")
+                continue
+
+            # Agrega la cantidad calculada del producto al dispenser
+            DispenserProducts.objects.create_or_update_quantity(
+                dispenser=dispenser,
+                product=product,
+                quantity=total_quantity
+            )
+
+        messages.success(request, "Productos retirados correctamente.")
+        return redirect('medication:medication_list')
+
+    return redirect('medication:medication_list')
+
+def remove(request):
+    if request.method == 'POST':
+        dispenser_product_id = request.POST.get('dispenser_product_id')
+        
+        if dispenser_product_id:
+            try:
+                dispenser_product_id = int(dispenser_product_id)
+                dispenser_product = get_object_or_404(DispenserProducts, id=dispenser_product_id)
+                dispenser_product.delete()
+                messages.success(request, "Producto eliminado del dispenser")
+            except ValueError:
+                messages.error(request, "ID de producto inválido")
+        else:
+            messages.error(request, "No se proporcionó ID de producto")
+    
     return redirect('dispensers:dispenser')
+
+
 
 def register_withdrawal(request):
     if request.method == 'POST':

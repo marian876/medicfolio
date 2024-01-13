@@ -1,8 +1,13 @@
+{% load static %}
+
 <div class="card mb-1 shadow-sm">
     <div class="row g-0">
         <div class="col-md-2 d-flex align-items-center">
-            <img src="{{ product.imagen_caja.url }}" class="img-fluid rounded-start" alt="{{ product.nombre_local }}" style="max-height: 50px; width: auto;">
-        </div>
+            {% if product.imagen_caja %}
+                <img src="{{ product.imagen_caja.url }}" class="img-fluid rounded-start" alt="{{ product.nombre_local }}" style="max-height: 50px; width: auto;">
+            {% else %}
+            <img src="{% static 'images/sin_imagen.png' %}" class="img-fluid rounded-start" alt="Imagen no disponible" style="max-height: 50px; width: auto;">
+            {% endif %}        </div>
         <div class="col-md-8">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
@@ -22,13 +27,13 @@
                     Acciones
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
-                    <li><a class="dropdown-item" href="{% url 'stock:agregar_compra' %}?producto_id={{ product.id }}">Cargar Existencia</a></li>
+                    <li><a class="dropdown-item text-primary" href="{% url 'products:product' product.slug %}">Más datos</a></li>
+                    <li><a class="dropdown-item text-success" href="{% url 'stock:agregar_compra' %}?producto_id={{ product.id }}">Cargar compra</a></li>
                     {% if product.existencia > 0 %}
-                        <li><a class="dropdown-item" href="{% url 'dispensers:modify' product.id %}">Agregar para Retirar</a></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'dispensers:modify' product.id %}">Retirar</a></li>
                     {% else %}
-                        <li><a class="dropdown-item disabled" tabindex="-1" aria-disabled="true">Agregar para Retirar (No disponible)</a></li>
+                        <li><a class="dropdown-item disabled" tabindex="-1" aria-disabled="true">Retirar (No disponible)</a></li>
                     {% endif %}
-                    <li><a class="dropdown-item" href="{% url 'products:product' product.slug %}">Más datos</a></li>
                 </ul>
             </div>
         </div>

@@ -3,8 +3,8 @@
 
 
 {% block content %}
-<div class="container">
 {% include "snippets/title.html" with title=product.nombre_local %}
+<div class="container">
     <div class="row mt-4 align-items-center">
         <div class="col-md-6 text-center">
             {% if product.imagen_caja %}
@@ -28,11 +28,7 @@
                 </form>
             </div>
             <div class="form-group mt-4">
-                {% if request.META.HTTP_REFERER %}
-                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
-                {% else %}
-                    <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Volver</a>
-                {% endif %}
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
             </div>
         </div>
     </div>
@@ -44,7 +40,13 @@
             <p class="mb-0"><strong>Compuesto Principal:</strong> {{ product.compuesto_principal }}</p>
             <p class="mb-0"><strong>Presentación:</strong> {{ product.presentacion }}</p>
             <p class="mb-0"><strong>Cantidad por caja:</strong> {{ product.cantidad_caja }}</p>
-            <p class="mb-0"><strong>Especialidad:</strong> {{ product.get_especialidades_display }}</p>
+            <p class="mb-0"><strong>Especialidad:</strong> 
+                {% for specialty in product.especialidad.all %}
+                    {{ specialty.nombre }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    No tiene especialidades asignadas.
+                {% endfor %}
+            </p>
             <p class="mb-0"><strong>Descripción:</strong> {{ product.descripcion }}</p>
         </div>
     </div>

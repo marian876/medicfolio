@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Guía médica' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            {% include "doctor/snippets/filter.html" %}
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Especialidad</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doctor in doctores %}
+                    <tr>
+                        <td>
+                            {% if doctor.imagen %}
+                                <img src="{{ doctor.imagen.url }}" alt="Imagen del Doctor" style="width: 50px; height: 50px;">
+                            {% else %}
+                                Sin imagen
+                            {% endif %}
+                        </td>
+                        <td>{{ doctor.nombre }}</td>
+                        <td>{{ doctor.especialidad.nombre|default:"N/A" }}</td>
+                        <td>{{ doctor.telefono_reserva }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                    <li><a class="dropdown-item text-primary" href="{% url 'consultations:doctor_detail' doctor.pk %}">Más datos</a></li>
+                                    <li><a class="dropdown-item text-success" href="{% url 'consultations:doctor_update' doctor.pk %}">Actualizar</a></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'consultations:doctor_delete' doctor.pk %}" onclick="return confirm('¿Está seguro que desea eliminar este doctor?');">Eliminar</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

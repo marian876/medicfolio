@@ -1,0 +1,35 @@
+<!-- create_prescription.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Agregar Prescripción' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.consulta.label_tag }} {{ form.consulta }}
+                </div>
+                <div class="form-group">
+                    {{ form.producto.label_tag }} {{ form.producto }}
+                </div>
+                <div class="form-group">
+                    {{ form.dosis.label_tag }} {{ form.dosis }}
+                </div>
+                <div class="form-group">
+                    {{ form.frecuencia.label_tag }} {{ form.frecuencia }}
+                </div>
+                <div class="form-group">
+                    {{ form.periodo.label_tag }} {{ form.periodo }}
+                </div>
+                <div class="form-group form-check">
+                    {{ form.periodo_indefinido }} {{ form.periodo_indefinido.label_tag }}
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

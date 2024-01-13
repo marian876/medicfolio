@@ -14,7 +14,7 @@ class Compra(models.Model):
     cantidad = models.PositiveIntegerField()
     fecha_compra = models.DateTimeField(auto_now_add=True)
     lugar_compra = models.ForeignKey(Farmacia, on_delete=models.CASCADE, verbose_name="Lugar de Compra")
-    precio_compra = models.DecimalField("Precio de Compra", max_digits=10, decimal_places=2)
+    precio_compra = models.DecimalField("Precio de Compra", max_digits=10, decimal_places=0)
 
     def __str__(self):
         return f"{self.cantidad} de {self.producto.nombre_local}"

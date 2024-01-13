@@ -2,8 +2,8 @@
 {% load product_extras %}
 
 {% block content %}
+{% include "snippets/title.html" with title='Editar Producto' %}
 <div class="container">
-    {% include "snippets/title.html" with title='Editar Producto' %}
     <div class="row justify-content-center">
         <div class="col-md-11">
             {% include "products/snippets/product_full.html" %}

@@ -1,6 +1,6 @@
 from django import forms
-#from django.contrib.auth.models import User
 from users.models import User, Profile
+
 
 class RegisterForm(forms.Form):
     
@@ -57,6 +57,7 @@ class RegisterForm(forms.Form):
     cirugias = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     enfermedades_familiares = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     historial = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False)
+    foto = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control-file'}))
 
     def clean_username(self):
         username=self.cleaned_data.get('username')
@@ -90,13 +91,13 @@ class RegisterForm(forms.Form):
         )
         profile = Profile.objects.create(
             user=user,
-            biografia=self.cleaned_data.get('biografia', ''),
             fecha_nacimiento=self.cleaned_data.get('fecha_nacimiento'),
             encargado=self.cleaned_data.get('encargado', ''),
             alergias=self.cleaned_data.get('alergias', 'No especificado'),
             enfermedades_base=self.cleaned_data.get('enfermedades_base', ''),
             cirugias=self.cleaned_data.get('cirugias', ''),
-            enfermedades_familiares=self.cleaned_data.get('enfermedades_familiares', '')
+            enfermedades_familiares=self.cleaned_data.get('enfermedades_familiares', ''),
+            foto=self.cleaned_data.get('foto')
         )
 
         return user

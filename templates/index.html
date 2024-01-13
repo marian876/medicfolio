@@ -4,7 +4,8 @@
 {% block title %}{{title}}{% endblock title %}
 
 {% block content %}
-<h1>Inicio</h1>
+    {% include "snippets/presentation.html" %}
+    {% include "snippets/dashboard.html" %}
 
 {% endblock content %}
 

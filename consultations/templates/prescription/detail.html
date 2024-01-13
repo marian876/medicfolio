@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Detalle de la Prescripción{% endblock title %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Detalle de la Prescripción' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <!-- Detalles de la Prescripción -->
+            <h3 style="{% if prescription.activa %}color: green;{% endif %}">Prescripción - {{ prescription.activa|yesno:"Activa,No activa" }}</h3>
+            <p>Producto: {{ prescription.producto.nombre_local }}</p>
+            <p>Dosis: {{ prescription.dosis }}</p>
+            <p>Frecuencia: {{ prescription.frecuencia }}</p>
+            <p>Periodo: {% if prescription.periodo_indefinido %}Indefinido{% else %}{{ prescription.periodo }} días{% endif %}</p>
+            <p>Indicaciones: {{ prescription.indicaciones }}</p>
+            
+            <!-- Detalles de la Cita -->
+            <h3>Cita</h3>
+            <p>Doctor: {{ prescription.consulta.cita.doctor.nombre }}</p>
+            <p>Fecha y Hora: {{ prescription.consulta.cita.fecha_hora|date:"d/m/Y H:i" }}</p>
+            <p>Motivo: {{ prescription.consulta.cita.motivo }}</p>
+            <p>Costo: {{ prescription.consulta.cita.costo }}</p>
+            <p>Acompañante: {{ prescription.consulta.cita.acompanante }}</p>
+            <p>Nota: {{ prescription.consulta.cita.nota }}</p>
+
+            <!-- Detalles de la Consulta -->
+            <h3>Consulta</h3>
+            <p>Diagnóstico: {{ prescription.consulta.diagnostico }}</p>
+            <p>Notas de la Consulta: {{ prescription.consulta.notas }}</p>
+
+
+            <div class="mt-3">
+                <a href="{% url 'consultations:prescription_update' prescription.pk %}" class="btn btn-sm btn-warning">Actualizar</a>
+                <a href="{% url 'consultations:prescription_delete' prescription.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

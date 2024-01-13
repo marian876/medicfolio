@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
+
 {% block content %}
+{% include "snippets/title.html" with title='Especialidades' %}
 <div class="container">
-    {% include "snippets/title.html" with title='Especialidades' %}
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <div class="text-end">
-                <a href="{% url 'products:specialty_add' %}" class="btn btn-primary">Agregar Especialidad</a>
-            </div>
+            {% include "specialty/snippets/filter.html" %}
+
             <table class="table mt-4">
                 <thead>
                     <tr>
@@ -15,13 +15,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for specialty in specialty_list %}
+                    {% for specialty in specialties %}
                     <tr>
                         <td>{{ specialty.nombre }}</td>
                         <td>
-                            <a href="{% url 'products:specialty_edit' specialty.id %}" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="{% url 'products:specialty_delete' specialty.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                    <li><a class="dropdown-item text-success" href="{% url 'products:specialty_update' specialty.id %}">Actualizar</a></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'products:specialty_delete' specialty.id %}" onclick="return confirm('¿Está seguro que desea eliminar esta especialidad?');">Eliminar</a></li>
+                                </ul>
+                            </div>
                         </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">No hay especialidades disponibles.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

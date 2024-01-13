@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Listado de Consultas' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            {% include "consultation/snippets/filter.html" %}
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Cita</th>
+                        <th>Diagnóstico</th>
+                        <th>Audio</th>
+                        <th>PDF de Indicaciones</th>
+                        <th>Notas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consultation in consultations %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'consultations:appointment_detail' consultation.cita.pk %}">
+                                {{ consultation.cita }}
+                            </a>
+                        </td>
+                        <td>{{ consultation.diagnostico }}</td>
+                        <td>
+                            {% if consultation.audio %}
+                                <a href="{{ consultation.audio.url }}">Descargar Audio</a>
+                            {% else %}
+                                No Disponible
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if consultation.pdf_indicaciones %}
+                                <a href="{{ consultation.pdf_indicaciones.url }}">Descargar PDF</a>
+                            {% else %}
+                                No Disponible
+                            {% endif %}
+                        </td>
+                        <td>{{ consultation.notas }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                    <li><a class="dropdown-item text-dark" href="{% url 'consultations:consultation_detail' consultation.pk %}">Más datos</a></li>
+                                    <li><a class="dropdown-item text-primary" href="{% url 'consultations:consultation_update' consultation.pk %}">Actualizar</a></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'consultations:consultation_delete' consultation.pk %}">Eliminar</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No hay consultas disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

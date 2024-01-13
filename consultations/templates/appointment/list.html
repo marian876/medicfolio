@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Listado de Citas' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            {% include "appointment/snippets/filter.html" %}
+            {% include "appointment/snippets/list.html" %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var pendienteSelector = document.querySelector('select[name="pendiente"]');
+        if (pendienteSelector) {
+            pendienteSelector.addEventListener('change', function () {
+                document.getElementById('filter-form').submit();
+            });
+        }
+    });
+</script>
+{% endblock %}

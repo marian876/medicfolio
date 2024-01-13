@@ -1,0 +1,56 @@
+{% load product_extras %}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col">#</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio unitario</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cp in dispenser.products_related %}
+                <tr class="text-center">
+                    <th>{{ forloop.counter }}</th>
+                    <td>
+                        <a href="{% url 'products:product' cp.product.slug %}" class="text-decoration-none">{{ cp.product.nombre_local }}</a>
+                    </td>
+                    <td>{{ cp.quantity }}</td>
+                    <td>
+                        <span class="font-weight-bold text-danger">{{ cp.product.precio_por_unidad | price_format }}</span>
+                    </td>
+                    <td>
+                        <!-- Formulario de eliminación para cada producto -->
+                        <form action="{% url 'dispensers:remove' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="dispenser_product_id" value="{{ cp.id }}">
+                            <button type="submit" class="btn btn-link p-0 text-danger" style="font-size: smaller;">Eliminar</button>
+                        </form>
+                        <a href="{% url 'dispensers:modify' cp.product.id %}" class="text-decoration-none text-primary" style="font-size: smaller;">Modificar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <!-- Formulario para registrar el retiro de todos los productos -->
+        <form action="{% url 'dispensers:register_withdrawal' %}" method="post" class="mt-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning w-100">Registrar el retiro</button>
+        </form>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-2">
+    <div class="col-md-7">
+        <a href="{% url 'index' %}" class="btn btn-primary w-100">Seguir seleccionando</a>
+    </div>
+</div>

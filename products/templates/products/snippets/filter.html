@@ -1,21 +1,32 @@
-<form method="get" action="{% url 'products:product_list_short' %}" class="form-inline">
-    <div class="form-group">
-        <label for="id_especialidad" style="margin-right: 5px;">{{ filter_form.especialidad.label }}</label>
-        {{ filter_form.especialidad }}
-        <span style="margin-right: 10px;"></span>
-
-        <label for="id_sin_existencia" style="margin-right: 5px;">{{ filter_form.sin_existencia.label }}</label>
-        {{ filter_form.sin_existencia }}
-        <span style="margin-right: 10px;"></span>
-
-        <label for="id_uso_cotidiano" style="margin-right: 5px;">{{ filter_form.uso_cotidiano.label }}</label>
+<form method="get" class="form-inline">
+    <div class="form-check mb-3">
+        {{ filter_form.uso_cotidiano.label_tag }}
         {{ filter_form.uso_cotidiano }}
-        <span style="margin-right: 10px;"></span>
-
-        <label for="id_venta_controlada" style="margin-right: 5px;">{{ filter_form.venta_controlada.label }}</label>
+    </div>
+    <div class="form-check mb-3">
+        {{ filter_form.con_prescripcion.label_tag }}
+        {{ filter_form.con_prescripcion }}
+    </div>
+    <div class="form-check mb-3">
+        {{ filter_form.venta_controlada.label_tag }}
         {{ filter_form.venta_controlada }}
-        <span style="margin-right: 20px;"></span>
-
-        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+    <div class="form-check mb-3">
+        {{ filter_form.sin_existencia.label_tag }}
+        {{ filter_form.sin_existencia }}
+    </div>
+    <div class="form-check mb-3">
+        {{ filter_form.especialidad.label_tag }}
+        {{ filter_form.especialidad }}
+    </div>
+    <div>
+        <button type="submit" class="btn btn-sm btn-primary mb-3">Filtrar</button>
     </div>
 </form>
+
+<form method="get" class="d-flex mb-3">
+    {{ search_form.search }}
+    <button type="submit" class="btn btn-sm btn-outline-secondary">Buscar</button>
+    <a href="{% url 'products:new_product' %}" class="btn btn-sm btn-primary ms-2">Nuevo</a>
+</form>
+

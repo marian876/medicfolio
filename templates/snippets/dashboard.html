@@ -1,0 +1,37 @@
+<div class="container mt-4">
+    <!-- Sección de Citas Médicas Pendientes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">Citas Médicas Pendientes</h3>
+                <div class="card-body">
+                    {% include "appointment/snippets/list.html" %}
+                </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">Medicamentos con Prescripción Activa</h3>
+                <div class="card-body">
+                    {% include "medication/snippets/list.html" %}
+                </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-3">Medicamentos a Comprar (Stock Mínimo para 7 Días)</h3>
+            <div class="card">
+                <div class="card-body">
+                    <!-- Aquí va el listado de medicamentos a comprar -->
+                    <!-- Ejemplo de medicamento a comprar -->
+                    <div class="mb-3">
+                        <h5>Ibuprofeno 600mg</h5>
+                        <p>Stock actual: 10 unidades</p>
+                    </div>
+                    <!-- Agrega más medicamentos aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Listado de prescripciones médicas' %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            {% include "prescription/snippets/filter.html" %}
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Consulta</th>
+                        <th>Producto</th>
+                        <th>Dosis diaria</th>
+                        <th>Horario</th>
+                        <th>Periodo (días)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prescription in prescriptions %}
+                    <tr>
+                        <td>{{ prescription.consulta_id }}</td>
+                        <td>{{ prescription.producto.nombre_local }}</td>
+                        <td>{{ prescription.dosis }}</td>
+                        <td>{{ prescription.frecuencia }}</td>
+                        <td>
+                            {% if prescription.periodo_indefinido %}
+                                Indefinido
+                            {% else %}
+                                {{ prescription.periodo|default_if_none:"0" }} días
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                    <li><a class="dropdown-item text-primary" href="{% url 'consultations:prescription_detail' prescription.pk %}">Más datos</a></li>
+                                    <li><a class="dropdown-item text-success" href="{% url 'consultations:prescription_update' prescription.pk %}">Actualizar</a></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'consultations:prescription_delete' prescription.pk %}">Eliminar</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var activaSelector = document.querySelector('select[name="activa"]'); 
+        if (activaSelector) {
+            activaSelector.addEventListener('change', function () {
+                document.getElementById('filter-form').submit(); 
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Detalles de la Consulta' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Consulta: {{ consultation.cita }}</h5>
+                    <p class="card-text">
+                        Doctor: {{ consultation.cita.doctor.nombre }}<br>
+                        Fecha y Hora: {{ consultation.cita.fecha_hora }}<br>
+                        Motivo: {{ consultation.cita.motivo }}<br>
+                        Costo: {{ consultation.cita.costo }}<br>
+                        Acompañante: {{ consultation.cita.acompanante }}<br>
+                        Días para la siguiente cita: {{ consultation.cita.cita_posterior }}<br>
+                        Notas de la Cita: {{ consultation.cita.nota }}<br><br>
+
+                        Diagnóstico: {{ consultation.diagnostico }}<br>
+                        {% if consultation.audio %}
+                        Audio de la Consulta: <a href="{{ consultation.audio.url }}">Descargar Audio</a><br>
+                        {% endif %}
+                        {% if consultation.pdf_indicaciones %}
+                        PDF de Indicaciones: <a href="{{ consultation.pdf_indicaciones.url }}">Descargar PDF</a><br>
+                        {% endif %}
+                        Notas de la Consulta: {{ consultation.notas }}<br>
+                    </p>
+                </div>
+            </div>
+            <a href="{% url 'consultations:consultation_update' consultation.pk %}" class="btn btn-sm btn-warning mt-2">Actualizar</a>
+            <a href="{% url 'consultations:consultation_delete' consultation.pk %}" class="btn btn-sm btn-danger mt-2">Eliminar</a>
+            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

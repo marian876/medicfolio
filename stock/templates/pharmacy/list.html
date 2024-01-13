@@ -1,33 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include "snippets/title.html" with title='Farmacias' %}
 <div class="container">
-    {% include "snippets/title.html" with title='Farmacias' %}
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <div class="text-end">
-                <a href="{% url 'stock:pharmacy_add' %}" class="btn btn-primary">Agregar Farmacia</a>
-            </div>
-        <table class="table mt-4">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Web</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for farmacia in farmacias %}
-                <tr>
-                    <td>{{ farmacia.nombre }}</td>
-                    <td>{{ farmacia.web }}</td>
-                    <td>
-                        <a href="{% url 'stock:pharmacy_edit' farmacia.pk %}" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="{% url 'stock:pharmacy_delete' farmacia.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% include "pharmacy/snippets/filter.html" %}
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Web</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for farmacia in farmacias %}
+                    <tr>
+                        <td>{{ farmacia.nombre }}</td>
+                        <td>{{ farmacia.web }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                    <li><a class="dropdown-item text-success" href="{% url 'stock:pharmacy_edit' farmacia.pk %}">Editar</a></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'stock:pharmacy_delete' farmacia.pk %}" onclick="return confirm('¿Está seguro que desea eliminar esta farmacia?');">Eliminar</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

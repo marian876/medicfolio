@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Actualizar datos de la Cita médica' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <form class="needs-validation" novalidate method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}" style="margin-bottom: 10px;">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <span class="text-danger">{{ error }}</span><br>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button class="btn btn-sm btn-primary mt-2" type="submit">Actualizar</button>
+                <a href="{{ request.META.HTTP_REFERER}}" class="btn btn-sm btn-secondary">Volver</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

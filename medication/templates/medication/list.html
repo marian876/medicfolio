@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Productos con Prescripciones Activas{% endblock title %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Productos con Prescripciones Activas' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="d-flex align-items-center mb-3">
+                <span class="me-2">Control de Stock para la cantidad de días:</span>
+                <form method="get" action="" class="d-flex">
+                    <input type="number" name="days" class="form-control me-2" placeholder="Días a consultar" value="{{ days }}" style="width: 150px;">
+                    <button type="submit" class="btn btn-primary btn-sm">Consultar Stock</button>
+                </form>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Productos con stock insuficiente para {{ days }} días</h5>
+                    {% for item in insufficient_stock_products %}
+                        <p class="card-text">{{ item.product.nombre_local }} - Existencia: {{ item.existencia }} - Faltan: {{ item.faltan }} </p>
+                    {% empty %}
+                        <p class="card-text">El stock de productos es suficiente para la cantidad de días consultada.</p>
+                    {% endfor %}
+                </div>
+                <form method="get" action="{% url 'medication:export_products_pdf' %}" class="d-flex justify-content-end">
+                    <input type="hidden" name="days" value="{{ days }}">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-file-pdf"></i> Descargar listado
+                    </button>
+                </form>
+
+            </div>
+            <form method="post" action="{% url 'dispensers:add_multiple' %}">
+                {% csrf_token %}
+                <div class="d-flex align-items-center mb-3">
+                    <span class="me-2">Retirar los productos necesarios para:</span>
+                        <input type="number" name="days" class="form-control me-2" placeholder="Días a retirar" required style="width: 150px;">
+                        <button type="submit" class="btn btn-primary btn-sm"> Agregar para retirar </button>
+                </div>
+            </form>
+            
+            {% include "medication/snippets/filter.html" %} 
+            {% if object_list %}
+
+                    {% include "medication/snippets/list.html" %}
+                </div>
+            {% else %}
+                <p>No hay productos con prescripciones activas.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

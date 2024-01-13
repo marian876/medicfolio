@@ -1,0 +1,7 @@
+<form method="get" class="input-group mb-3 mt-2">
+    <input type="text" name="search" class="form-control" placeholder="Buscar" value="{{ request.GET.search }}">
+    <div class="input-group-append">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Buscar</button>
+        <a href="{% url 'stock:pharmacy_add' %}" class="btn btn-primary ms-2">Nueva</a>
+    </div>
+</form>

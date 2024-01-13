@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include "snippets/title.html" with title='Cargar nuevo producto' %}
 <div class="container">
-    {% include "snippets/title.html" with title='Cargar nuevo producto' %}
-
     <div class="row justify-content-center">
         <div class="col-md-11">
             {% with presentaciones=presentaciones especialidades=especialidades %}

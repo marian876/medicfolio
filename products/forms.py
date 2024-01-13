@@ -4,6 +4,8 @@ from django import forms
 from .models import Specialty, Presentation, Product
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column
+from medication.models import ActiveProduct
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -91,18 +93,40 @@ class PresentationForm(forms.ModelForm):
         model = Presentation
         fields = ['nombre']
 
+class PresentationSearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buscar'})
+    )
+    
 class SpecialtyForm(forms.ModelForm):
     class Meta:
         model = Specialty
         fields = ['nombre']
 
+class SpecialtySearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buscar'})
+    )
+
 class ProductFilterForm(forms.Form):
+    con_prescripcion = forms.BooleanField(required=False, label="Con prescripción")
+    uso_cotidiano = forms.BooleanField(required=False, label='En uso')
+    venta_controlada = forms.BooleanField(required=False, label='Venta Controlada')
+    sin_existencia = forms.BooleanField(required=False, label='Sin Existencia')
     especialidad = forms.ModelChoiceField(
         queryset=Specialty.objects.all(),
         required=False,
-        label='Especialidad',
-        empty_label='Todas'
+        label="Especialidad",
+        empty_label="Cualquier especialidad"
     )
-    sin_existencia = forms.BooleanField(required=False, label='Sin Existencia')
-    uso_cotidiano = forms.BooleanField(required=False, label='Uso Cotidiano')
-    venta_controlada = forms.BooleanField(required=False, label='Venta Controlada')
+    def __init__(self, *args, **kwargs):
+        super(ProductFilterForm, self).__init__(*args, **kwargs)
+        self.fields['con_prescripcion'].widget.attrs.update({'class': 'form-check-input'})
+        self.fields['uso_cotidiano'].widget.attrs.update({'class': 'form-check-input'})
+        self.fields['venta_controlada'].widget.attrs.update({'class': 'form-check-input'})
+        self.fields['sin_existencia'].widget.attrs.update({'class': 'form-check-input'})
+
+class ProductSearchForm(forms.Form):
+    search = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buscar'}))

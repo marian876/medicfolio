@@ -2,75 +2,22 @@
 {% load product_extras %}
 
 {% block content %}
-<div class="container">    
     {% include "snippets/title.html" with title='Retirar productos del inventario' %}
-   
-    {% if dispenser.products.exists %}
-    <form action="{% url 'dispensers:register_withdrawal' %}" method="post">
-        {% csrf_token %}
-        <div class="row justify-content-center">
-            <div class="col-md-7">
-                <table class="table">
-                    <thead>
-                        <tr class="text-center">
-                            <th scope="col">#</th>
-                            <th scope="col">Producto</th>
-                            <th scope="col">Cantidad</th>
-                            <th scope="col">Precio unitario</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for cp in dispenser.products_related %}
-                        <tr class="text-center">
-                            <th>{{ forloop.counter }}</th>
-                            <td>
-                                <a href="{% url 'products:product' cp.product.slug %}" style="text-decoration: none;">{{ cp.product.nombre_local }}</a>
-                            </td>
-                            <td>{{ cp.quantity }}</td>
-                            <td>
-                                <span class="font-weight-bold text-danger">{{ cp.product.precio_por_unidad | price_format }}</span>
-                            </td>
-                            <td>
-                                {% include "dispensers/snippets/remove.html" %}
-
-                                <a href="{% url 'dispensers:modify' cp.product.id %}" class="btn btn-link text-blue" style="font-size: smaller; text-decoration: none; margin: 0; padding: 0;">Modificar</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="font-weight-bold">
-                            Total({{dispenser.products.count}}): <span class="text-danger">{{dispenser.total | price_format}}</span>
-                        </div>
-                        <div class="mt-2 d-flex flex-column">
-                            <button type="submit" class="btn btn-warning w-100">Registrar el retiro</button>
-                            <a href="{% url 'index' %}" class="btn btn-primary w-100">Seguir seleccionando</a>
-                        </div>
-                    </div>
+    <div class="container">    
+    
+        {% if dispenser.products.exists %}
+            {% include "dispensers/snippets/withdrawal.html" %}
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-md-11">
+                    <p class="h2">No hay productos a retirar</p>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
                 </div>
-            </div>       
-        </div>
-    </form>
-    {% else %}
-    <div class="row justify-content-center">
-        <div class="col-md-11">
-            <p class="h2">No hay productos a retirar</p>
-            {% if request.META.HTTP_REFERER %}
-            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary mt-2">Volver</a>
-            {% else %}
-            <a href="{% url 'products:product_list' %}" class="btn btn-secondary mt-2" >Volver</a>
-            {% endif %}
-        </div>
-    {% endif %}
-</div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock content %}
 
-<!-- Sección de mensajes -->
 {% if messages %}
 <div id="message-container">
     {% for message in messages %}
@@ -82,11 +29,22 @@
     </div>
     {% endfor %}
 </div>
-</div>
+{% endif %}
 
+{% block script %}
 <script>
 function closeMessage() {
     document.getElementById('message-container').style.display = 'none';
 }
 </script>
-{% endif %}
+
+<script>
+    // Este script asegura que los botones de acción se alineen con el ancho de la tabla
+    document.addEventListener('DOMContentLoaded', function () {
+        var tableWidth = document.getElementById('products-table').offsetWidth;
+        var actionButtons = document.querySelector('.d-flex');
+        actionButtons.style.width = tableWidth + 'px';
+    });
+</script>
+
+{% endblock script %}
