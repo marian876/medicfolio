@@ -11,35 +11,37 @@
         </tr>
     </thead>
     <tbody>
-        {% for appointment in appointments %}
-        <tr>
-            <td>
-                <a href="{% url 'consultations:doctor_detail' appointment.doctor.pk %}">
-                    {{ appointment.doctor.nombre }}
-                </a>
-            </td>
-            <td>{{ appointment.fecha_hora|date:"d/m/Y H:i" }}</td>
-            <td>{{ appointment.motivo }}</td>
-            <td>{{ appointment.costo }}</td>
-            <td>{{ appointment.acompanante }}</td>
-            <td>{{ appointment.nota }}</td>
-            <td>
-                <div class="dropdown">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
-                        Acciones
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
-                        <li><a class="dropdown-item text-dark" href="{% url 'consultations:appointment_detail' appointment.pk %}">Más datos</a></li>
-                        <li><a class="dropdown-item text-primary" href="{% url 'consultations:appointment_update' appointment.pk %}">Actualizar</a></li>
-                        <li><a class="dropdown-item text-danger" href="{% url 'consultations:appointment_delete' appointment.pk %}">Eliminar</a></li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">No hay citas disponibles.</td>
-        </tr>
-        {% endfor %}
+        {% if appointments %}
+            {% for appointment in appointments %}
+            <tr>
+                <td>
+                    <a href="{% url 'consultations:doctor_detail' appointment.doctor.pk %}">
+                        {{ appointment.doctor.nombre }}
+                    </a>
+                </td>
+                <td>{{ appointment.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ appointment.motivo }}</td>
+                <td>{{ appointment.costo }}</td>
+                <td>{{ appointment.acompanante }}</td>
+                <td>{{ appointment.nota }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            Acciones
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                            <li><a class="dropdown-item text-dark" href="{% url 'consultations:appointment_detail' appointment.pk %}">Más datos</a></li>
+                            <li><a class="dropdown-item text-primary" href="{% url 'consultations:appointment_update' appointment.pk %}">Actualizar</a></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'consultations:appointment_delete' appointment.pk %}">Eliminar</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7">No hay citas disponibles.</td>
+            </tr>
+        {% endif %}
     </tbody>
 </table>

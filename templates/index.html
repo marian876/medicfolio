@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{title}}{% endblock title %}
+{% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-    {% include "snippets/presentation.html" %}
-    {% include "snippets/dashboard.html" %}
-
+    {% if user.is_authenticated %}
+        <!-- Contenido para usuarios autenticados -->
+        {% include "dashboard/dashboard.html" with appointments=appointments_active %}
+    {% else %}
+        <!-- Contenido para visitantes no autenticados -->
+        {% include "snippets/presentation.html" %}
+    {% endif %}
 {% endblock content %}
-
-
-    

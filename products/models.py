@@ -63,6 +63,18 @@ class Product(models.Model):
     def precio_por_unidad(self):
         return round(self.precio / self.cantidad_caja) if self.cantidad_caja else 0
     
+    @property
+    def dias_de_cobertura(self):
+        """Devuelve la cantidad de días que el stock actual puede cubrir según la dosis diaria."""
+        total_dosis_diaria = self.prescriptions.filter(activa=True).aggregate(
+            total_dosis_diaria=Sum('dosis')
+        )['total_dosis_diaria'] or 0
+        
+        if total_dosis_diaria == 0:
+            return float('inf')  # Indica que no hay consumo diario
+        
+        return self.existencia / total_dosis_diaria
+
     class Meta:
         verbose_name = ("Producto")
         verbose_name_plural = ("Productos")

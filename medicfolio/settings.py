@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'stock',
     'consultations',
     'medication',
+    'dashboard',
 ]
 
 MIDDLEWARE = [

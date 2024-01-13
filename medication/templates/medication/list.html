@@ -21,7 +21,7 @@
                     <h5 class="card-title">Productos con stock insuficiente para {{ days }} días</h5>
                     {% for item in insufficient_stock_products %}
                         <p class="card-text">{{ item.product.nombre_local }} - Existencia: {{ item.existencia }} - Faltan: {{ item.faltan }} </p>
-                    {% empty %}
+                        {% empty %}
                         <p class="card-text">El stock de productos es suficiente para la cantidad de días consultada.</p>
                     {% endfor %}
                 </div>

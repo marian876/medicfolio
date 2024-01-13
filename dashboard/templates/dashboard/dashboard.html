@@ -1,10 +1,15 @@
+<div
+    class="container-fluid">
+
+</div>
+
 <div class="container mt-4">
     <!-- Sección de Citas Médicas Pendientes -->
     <div class="row mb-4">
         <div class="col-12">
-            <h3 class="mb-3">Citas Médicas Pendientes</h3>
                 <div class="card-body">
-                    {% include "appointment/snippets/list.html" %}
+                    {% include "snippets/title.html" with title='Citas pendientes' %}
+                    {% include "dashboard/snippets/appointment.html" with appointments=appointments_active %}
                 </div>
         </div>
     </div>

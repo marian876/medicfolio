@@ -1,0 +1,32 @@
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Médico</th>
+            <th>Fecha y Hora</th>
+            <th>Motivo</th>
+            <th>Acompañante</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if appointments_active %}
+            {% for appointment in appointments_active %}
+            <tr>
+                <td>
+                    <a href="{% url 'consultations:appointment_detail' appointment.pk %}">
+                        {{ appointment.doctor.nombre }}
+                    </a>
+                </td>
+                <td>{{ appointment.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ appointment.motivo }}</td>
+                <td>{{ appointment.acompanante }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7">No hay citas disponibles.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+

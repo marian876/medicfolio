@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
+from consultations.models import Appointment
 from users.models import User
 from django.http import HttpResponse
 from .forms import RegisterForm
@@ -9,7 +10,11 @@ from .forms import RegisterForm
 from products.models import Product
 
 def index(request):
-    return render(request, 'index.html')
+    appointments_active = Appointment.objects.filter(pendiente=True).order_by('fecha_hora')
+    context = {
+        'appointments_active': appointments_active,
+    }
+    return render(request, 'index.html', context)
 
 
 def login_view(request):
