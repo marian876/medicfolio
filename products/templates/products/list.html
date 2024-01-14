@@ -11,9 +11,9 @@
             {% include "products/snippets/filter.html" %}  
             <div class="row">
                 {% for object in filter.qs %}
-                    <div class="col-3 mt-5">
-                        {% include "products/snippets/product.html" with product=object %}
-                    </div>
+                <div class="col-md-3 col-12 mt-5">
+                    {% include "products/snippets/product.html" with product=object %}
+                </div>
                 {% endfor %}
             </div>
         </div>
