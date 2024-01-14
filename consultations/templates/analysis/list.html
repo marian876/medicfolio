@@ -6,52 +6,54 @@
     <div class="row justify-content-center">
         <div class="col-md-11">
             {% include "analysis/snippets/filter.html" %}
-            <table class="table mt-4">
-                <thead>
-                    <tr>
-                        <th>Consulta</th>
-                        <th>Fecha de Análisis</th>
-                        <th>Descripción</th>
-                        <th>Realizado</th>
-                        <th>Resultado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for analysis in analyses %}
-                    <tr>
-                        <td>{{ analysis.consulta_id }}</td>
-                        <td>{{ analysis.fecha_analisis|date:"d/m/Y" }}</td>
-                        <td>{{ analysis.descripcion }}</td>
-                        <td>{{ analysis.realizado }}</td>
+            <div class="table-responsive"> 
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>Consulta</th>
+                            <th>Fecha de Análisis</th>
+                            <th>Descripción</th>
+                            <th>Realizado</th>
+                            <th>Resultado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for analysis in analyses %}
+                        <tr>
+                            <td>{{ analysis.consulta_id }}</td>
+                            <td>{{ analysis.fecha_analisis|date:"d/m/Y" }}</td>
+                            <td>{{ analysis.descripcion }}</td>
+                            <td>{{ analysis.realizado }}</td>
 
-                        <td>
-                            {% if analysis.resultado_pdf %}
-                                <a href="{{ analysis.resultado_pdf.url }}" target="_blank">Ver Resultado</a>
-                            {% else %}
-                                No disponible
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Acciones
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
-                                    <li><a class="dropdown-item text-dark" href="{% url 'consultations:analysis_detail' analysis.pk %}">Más datos</a></li>
-                                    <li><a class="dropdown-item text-primary" href="{% url 'consultations:analysis_update' analysis.pk %}">Actualizar</a></li>
-                                    <li><a class="dropdown-item text-danger" href="{% url 'consultations:analysis_delete' analysis.pk %}" onclick="return confirm('¿Está seguro que desea eliminar este análisis?');">Eliminar</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6">No hay análisis disponibles.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <td>
+                                {% if analysis.resultado_pdf %}
+                                    <a href="{{ analysis.resultado_pdf.url }}" target="_blank">Ver Resultado</a>
+                                {% else %}
+                                    No disponible
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Acciones
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                        <li><a class="dropdown-item text-dark" href="{% url 'consultations:analysis_detail' analysis.pk %}">Más datos</a></li>
+                                        <li><a class="dropdown-item text-primary" href="{% url 'consultations:analysis_update' analysis.pk %}">Actualizar</a></li>
+                                        <li><a class="dropdown-item text-danger" href="{% url 'consultations:analysis_delete' analysis.pk %}" onclick="return confirm('¿Está seguro que desea eliminar este análisis?');">Eliminar</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">No hay análisis disponibles.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
