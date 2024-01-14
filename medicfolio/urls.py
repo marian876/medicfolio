@@ -10,6 +10,7 @@ urlpatterns = [
     path('usuarios/logout', views.logout_view, name='logout'),
     path('usuarios/registro', views.register_view, name='register'),
 
+
     path('admin/', admin.site.urls),
     path('productos/', include('products.urls')),
     path('retiros/', include('dispensers.urls')),
@@ -17,7 +18,6 @@ urlpatterns = [
     path('consultas/', include('consultations.urls')),
     path('medicacion/', include('medication.urls')),
     path('dashboard/', include('dashboard.urls')),
-]
+    path('usuarios/', include('users.urls')),
 
-if settings.DEBUG:
-    urlpatterns +=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,10 +1,9 @@
 from django import forms
 from users.models import User, Profile
 
-
 class RegisterForm(forms.Form):
     
-    username= forms.CharField(label='Nombre de usuario',
+    username= forms.CharField(label='Usuario',
                               required=True, 
                               min_length=4, max_length=50, 
                               widget=forms.TextInput(attrs={
@@ -81,23 +80,92 @@ class RegisterForm(forms.Form):
         if cleaned_data.get('password2') != cleaned_data.get('password'):
             self.add_error('password2','La contraseña no coincide')
     
-    def save(self):
-        user = User.objects.create_user(
-            self.cleaned_data.get('username'),
-            self.cleaned_data.get('email'),
-            self.cleaned_data.get('password'),
-            first_name=self.cleaned_data.get('first_name'),
-            last_name=self.cleaned_data.get('last_name'),
-        )
-        profile = Profile.objects.create(
-            user=user,
-            fecha_nacimiento=self.cleaned_data.get('fecha_nacimiento'),
-            encargado=self.cleaned_data.get('encargado', ''),
-            alergias=self.cleaned_data.get('alergias', 'No especificado'),
-            enfermedades_base=self.cleaned_data.get('enfermedades_base', ''),
-            cirugias=self.cleaned_data.get('cirugias', ''),
-            enfermedades_familiares=self.cleaned_data.get('enfermedades_familiares', ''),
-            foto=self.cleaned_data.get('foto')
-        )
+    def save(self, commit=True):
+        user = super(UserEditForm, self).save(commit=False)
+
+        if commit:
+            user.save()
+
+        profile = user.profile if hasattr(user, 'profile') else Profile(user=user)
+
+        if self.cleaned_data.get('foto'):
+            profile.foto = self.cleaned_data['foto']
+
+        profile.historial = self.cleaned_data.get('historial', profile.historial)
+        profile.fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento', profile.fecha_nacimiento)
+        profile.encargado = self.cleaned_data.get('encargado', profile.encargado)
+        profile.alergias = self.cleaned_data.get('alergias', profile.alergias)
+        profile.enfermedades_base = self.cleaned_data.get('enfermedades_base', profile.enfermedades_base)
+        profile.cirugias = self.cleaned_data.get('cirugias', profile.cirugias)
+        profile.enfermedades_familiares = self.cleaned_data.get('enfermedades_familiares', profile.enfermedades_familiares)
+
+        if commit:
+            profile.save()
+
+        return user
+        
+class UserEditForm(forms.ModelForm):
+    fecha_nacimiento = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=False
+    )
+    encargado = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=False
+    )
+    alergias = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=False
+    )
+    enfermedades_base = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=False
+    )
+    cirugias = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=False
+    )
+    enfermedades_familiares = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=False
+    )
+    historial = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control'}),
+        required=False
+    )
+    foto = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control-file'})
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super(UserEditForm, self).__init__(*args, **kwargs)
+        # Si el formulario tiene una instancia, entonces estamos editando un usuario existente
+        if self.instance and hasattr(self.instance, 'profile'):
+            # Inicializa los campos del formulario con los valores del perfil
+            self.fields['fecha_nacimiento'].initial = self.instance.profile.fecha_nacimiento
+            self.fields['encargado'].initial = self.instance.profile.encargado
+            self.fields['alergias'].initial = self.instance.profile.alergias
+            self.fields['enfermedades_base'].initial = self.instance.profile.enfermedades_base
+            self.fields['cirugias'].initial = self.instance.profile.cirugias
+            self.fields['enfermedades_familiares'].initial = self.instance.profile.enfermedades_familiares
+            self.fields['historial'].initial = self.instance.profile.historial
+            self.fields['foto'].initial = self.instance.profile.foto
+
+    def save(self, commit=True):
+        user = super(UserEditForm, self).save(commit=False)
+
+        if commit:
+            user.save()
+
+        profile = user.profile if hasattr(user, 'profile') else Profile(user=user)
+
+        if self.cleaned_data.get('foto'):
+            profile.foto = self.cleaned_data['foto']
+            profile.save()
 
         return user

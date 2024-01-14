@@ -21,7 +21,7 @@
                     {% for consultation in consultations %}
                     <tr>
                         <td>
-                            <a href="{% url 'consultations:appointment_detail' consultation.cita.pk %}">
+                            <a href="{% url 'consultations:consultation_detail' consultation.cita.pk %}">
                                 {{ consultation.cita }}
                             </a>
                         </td>

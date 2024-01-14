@@ -34,3 +34,7 @@ h1{
   .card-container .card img {
     max-height: 50px; /* Altura máxima de la imagen */
   }
+
+  .navbar-nav .dropdown-menu {
+    min-width: 200px; /* Ajusta según el contenido */
+}

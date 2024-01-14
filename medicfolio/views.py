@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout
 from consultations.models import Appointment
 from users.models import User
 from django.http import HttpResponse
-from .forms import RegisterForm
+from .forms import RegisterForm, UserEditForm
 
 from products.models import Product
 
@@ -70,3 +70,6 @@ def register_view(request):
     return render(request, 'users/register.html', {
         'form':form
     })
+
+
+
