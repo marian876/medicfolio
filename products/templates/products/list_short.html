@@ -8,8 +8,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-11">
-            {% include "products/snippets/filter_short.html" %}  
-            <div class="container mt-3">
+                {% include "products/snippets/filter_short.html" %}  
+        <div class="container mt-3">
                 {% for product in products %}
                     {% include "products/snippets/product_short.html" with product=product %}
                 {% endfor %}

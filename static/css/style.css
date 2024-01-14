@@ -38,3 +38,9 @@ h1{
   .navbar-nav .dropdown-menu {
     min-width: 200px; /* Ajusta según el contenido */
 }
+
+.centrar-filtros {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}

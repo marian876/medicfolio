@@ -1,21 +1,22 @@
-<form method="get" class="form-inline">
-    <div class="form-check mb-3">
+<div class="container centrar-filtros">
+    <form method="get" class="d-flex align-items-center justify-content-center">
+        <div class="form-check mb-2 me-2">
         {{ filter_form.uso_cotidiano.label_tag }}
         {{ filter_form.uso_cotidiano }}
     </div>
-    <div class="form-check mb-3">
+        <div class="form-check mb-2 me-2">
         {{ filter_form.con_prescripcion.label_tag }}
         {{ filter_form.con_prescripcion }}
     </div>
-    <div class="form-check mb-3">
+        <div class="form-check mb-2 me-2">
         {{ filter_form.venta_controlada.label_tag }}
         {{ filter_form.venta_controlada }}
     </div>
-    <div class="form-check mb-3">
+        <div class="form-check mb-2 me-2">
         {{ filter_form.sin_existencia.label_tag }}
         {{ filter_form.sin_existencia }}
     </div>
-    <div class="form-check mb-3">
+        <div class="form-check mb-2 me-2">
         {{ filter_form.especialidad.label_tag }}
         {{ filter_form.especialidad }}
     </div>
