@@ -1,26 +1,27 @@
-{% extends "base.html" %}
+{% extends "base_login.html" %}
+{% load static %}
 
 {% block title %}Ingreso{% endblock title %}
 
 {% block content %}
-    <div class="col">
-        <h2>Login</h2>
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="username" class="form-label">Nombre de usuario</label>
-                <input type="text" name="username" id="" class="form-control" placeholder="" aria-describedby="helpId">
-                <small id="helpId" class="text-muted"></small>
-            </div>
+<main class="form-signin w-100 m-auto" style="max-width: 330px; padding: 15px; margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #e0f7fa; border-radius: 5px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+    <form method="post" class="text-center">
+    {% csrf_token %}
+    <img class="mb-4" src="{% static 'images/icono.png' %}" alt="" width="72" height="57">
+    <h1 class="h3 mb-3 fw-normal">Ingresar</h1>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <input type="password" name="password" id="" class="form-control" placeholder="" aria-describedby="helpId">
-                <small id="helpId" class="text-muted"></small>
-                </div>
-
-            <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>
+    <div class="form-floating mb-3">
+        <input type="text" name="username" class="form-control" id="floatingInput" placeholder="Nombre de usuario">
+      <label for="floatingInput">Nombre de usuario</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Contraseña">
+      <label for="floatingPassword">Contraseña</label>
     </div>
 
+    <button class="btn btn-sm btn-primary btn-block" type="submit">Enviar</button>
+    <p class="mt-5 mb-3 text-muted">Proyecto de Marian</p>
+  </form>
+</main>
 {% endblock content %}
+
