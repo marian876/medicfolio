@@ -4,38 +4,23 @@
 </div>
 
 <div class="container mt-4">
-    <!-- Sección de Citas Médicas Pendientes -->
     <div class="row mb-4">
         <div class="col-12">
-                <div class="card-body">
-                    {% include "snippets/title.html" with title='Citas pendientes' %}
-                    {% include "dashboard/snippets/appointment.html" with appointments=appointments_active %}
-                </div>
+            <div class="card-body">
+                {% include "snippets/title.html" with title='Citas pendientes' %}
+                {% include "dashboard/snippets/appointment.html" with appointments_active=appointments_active %}
+            </div>
         </div>
-    </div>
-
-    <div class="row mb-4">
         <div class="col-12">
-            <h3 class="mb-3">Medicamentos con Prescripción Activa</h3>
-                <div class="card-body">
-                    {% include "medication/snippets/list.html" %}
-                </div>
+            <div class="card-body">
+                {% include "snippets/title.html" with title='Medicamentos con Prescripción Activa' %}
+                {% include "dashboard/snippets/medication.html" with prescription_products=prescription_products %}
+            </div>
         </div>
-    </div>
-
-    <div class="row">
         <div class="col-12">
-            <h3 class="mb-3">Medicamentos a Comprar (Stock Mínimo para 7 Días)</h3>
-            <div class="card">
-                <div class="card-body">
-                    <!-- Aquí va el listado de medicamentos a comprar -->
-                    <!-- Ejemplo de medicamento a comprar -->
-                    <div class="mb-3">
-                        <h5>Ibuprofeno 600mg</h5>
-                        <p>Stock actual: 10 unidades</p>
-                    </div>
-                    <!-- Agrega más medicamentos aquí -->
-                </div>
+            <div class="card-body">
+                {% include "snippets/title.html" with title='Compras necesarias para la semana' %}
+                {% include "dashboard/snippets/purchase.html" with products_to_purchase=products_purchase %}
             </div>
         </div>
     </div>

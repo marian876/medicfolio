@@ -4,6 +4,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.db.models.signals import pre_save
 import uuid
+from django.db.models import Sum
+
 
 class Presentation(models.Model):
     nombre = models.CharField(max_length=50, unique=True)
@@ -55,9 +57,9 @@ class Product(models.Model):
     creado_el = models.DateTimeField("Creado el", auto_now_add=True)
     
     @property
-    def prescripcion_activa(self):
+    def active_prescriptions(self):
         # Esto asume que existe al menos una prescripción activa para el producto
-        return self.prescriptions.filter(activa=True).exists()
+        return self.prescriptions.filter(activa=True)
     
     @property
     def precio_por_unidad(self):
@@ -65,15 +67,27 @@ class Product(models.Model):
     
     @property
     def dias_de_cobertura(self):
-        """Devuelve la cantidad de días que el stock actual puede cubrir según la dosis diaria."""
+        """Devuelve la cantidad de días que el stock actual puede cubrir."""
         total_dosis_diaria = self.prescriptions.filter(activa=True).aggregate(
             total_dosis_diaria=Sum('dosis')
         )['total_dosis_diaria'] or 0
-        
+
         if total_dosis_diaria == 0:
-            return float('inf')  # Indica que no hay consumo diario
-        
-        return self.existencia / total_dosis_diaria
+            return 99999  # Representa "infinito"
+
+        return self.existencia // total_dosis_diaria
+
+    @property
+    def sobra(self):
+        """Devuelve la cantidad de medicamento extra que no completa un día entero."""
+        total_dosis_diaria = self.prescriptions.filter(activa=True).aggregate(
+            total_dosis_diaria=Sum('dosis')
+        )['total_dosis_diaria'] or 0
+
+        if total_dosis_diaria == 0:
+            return 0
+
+        return self.existencia % total_dosis_diaria
 
     class Meta:
         verbose_name = ("Producto")

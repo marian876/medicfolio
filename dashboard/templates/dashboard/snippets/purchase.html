@@ -1,0 +1,28 @@
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Suministro Restante</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products_to_purchase %}
+            <tr>
+                <td style="{% if product.dias_de_cobertura < 1 and product.dias_de_cobertura != 99999 %}color: red;{% endif %}">
+                    {{ product.nombre_local }}
+                </td>
+                <td style="{% if product.dias_de_cobertura < 1 and product.dias_de_cobertura != 99999 %}color: red;{% endif %}">
+                    {% if product.dias_de_cobertura == 99999 %}
+                        N/A
+                    {% else %}
+                        {{ product.dias_de_cobertura }} días
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">No hay productos para comprar.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

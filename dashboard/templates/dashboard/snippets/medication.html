@@ -1,0 +1,35 @@
+<!-- dashboard/snippets/medication.html -->
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Dosis</th>
+            <th>Frecuencia</th>
+            <th>Suministro para</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in prescription_products %}
+            {% for prescription in product.active_prescriptions %}
+                <tr>
+                    <td>
+                        <a href="{% url 'products:product' product.slug %}">{{ product.nombre_local }}</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'consultations:prescription_detail' prescription.pk %}">{{ prescription.dosis }}</a>
+                    </td>
+                    <td>{{ prescription.frecuencia }}</td>
+                    <td>{{ product.dias_de_cobertura }} días</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No hay prescripciones activas para este producto.</td>
+                </tr>
+            {% endfor %}
+        {% empty %}
+            <tr>
+                <td colspan="4">No hay productos con prescripción activa.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

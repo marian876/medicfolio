@@ -5,4 +5,5 @@ app_name = 'dashboard'
 
 urlpatterns = [
     path('citas_pendientes/', views.DashboardAppointmentListView.as_view(), name='dashboard_appointment'),
+    path('productos_prescriptos/', views.DashboardMedicationListView.as_view(), name='dashboard_medication'),
 ]
