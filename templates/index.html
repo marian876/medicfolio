@@ -6,8 +6,8 @@
 {% block content %}
     {% if user.is_authenticated %}
         <!-- Contenido para usuarios autenticados -->
-        {% include "dashboard/dashboard.html" with appointments=appointments_active %}
-    {% else %}
+        {% include "dashboard/snippets/appointment.html" with appointments=appointments %}
+        {% else %}
         <!-- Contenido para visitantes no autenticados -->
         {% include "snippets/presentation.html" %}
     {% endif %}

@@ -19,9 +19,9 @@
       <label for="floatingPassword">Contraseña</label>
     </div>
 
-    <button class="btn btn-sm btn-primary btn-block" type="submit">Enviar</button>
+    <button class="btn btn-primary btn-block mt-2" type="submit">Enviar</button>
+    <a href="{% url 'users:register' %}" class="btn btn-secondary btn-block mt-2">Registrarse</a>
     <p class="mt-5 mb-3 text-muted">Proyecto de Marian</p>
   </form>
 </main>
 {% endblock content %}
-

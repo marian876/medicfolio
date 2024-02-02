@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "snippets/title.html" with title='Solicitudes' %}
+    <div>
+        {% for item in open_requests_with_relationship %}
+            <div>
+                {{ item.solicitud.solicitante.username }} quiere cuidarte.
+                {% if item.parentezco %}
+                    Parentezco: {{ item.parentezco }}
+                {% endif %}
+                <a href="{% url 'users:accept_request' item.solicitud.id %}">Aceptar</a>
+                <a href="{% url 'users:reject_request' item.solicitud.id %}" style="color: red;">Rechazar</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

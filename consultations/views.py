@@ -1,30 +1,77 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from .models import Analysis, Doctor, Appointment, Prescription, Consultation
+from users.models import RequestPatient
 from medication.models import ActiveProduct
-from .forms import AnalysisFilterForm, ConsultationForm, DoctorForm, AppointmentForm, DoctorSearchForm, PrescriptionForm, AnalysisForm
+from .forms import ConsultationForm, DoctorForm, AppointmentForm, PrescriptionForm, AnalysisForm
 from django.contrib import messages
 from django.db.models import Q
-from .filters import AnalysisFilter, AppointmentFilter, ConsultationFilter,PrescriptionFilter
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
+def get_patient_for_user(usuario):
+    # ...
+    if usuario.groups.filter(name='Familiar').exists():
+        solicitud = RequestPatient.objects.filter(
+            solicitante=usuario, 
+            estado=RequestPatient.ESTADO_ACEPTADO
+        ).first()
+        return solicitud.paciente if solicitud else None
 
+    if usuario.groups.filter(name='Cuidador').exists():
+        solicitud = RequestPatient.objects.filter(
+            solicitante=usuario, 
+            estado=RequestPatient.ESTADO_ACEPTADO
+        ).first()
+        return solicitud.paciente if solicitud else None
+
+@method_decorator(login_required, name='dispatch')
 class DoctorListView(ListView):
     model = Doctor
     template_name = 'doctor/list.html'
     context_object_name = 'doctores'
 
     def get_queryset(self):
+        usuario = self.request.user
         queryset = super().get_queryset()
-        search_query = self.request.GET.get('search', None)
-        if search_query:
-            queryset = queryset.filter(nombre__icontains=search_query)
-        return queryset
+        paciente_id = self.request.GET.get('paciente')
 
+        if paciente_id:
+            queryset = queryset.filter(paciente__id=paciente_id)
+        elif usuario.groups.filter(name='Paciente').exists():
+            queryset = queryset.filter(paciente=usuario)
+        elif usuario.groups.filter(name__in=['Familiar', 'Cuidador']).exists():
+            paciente_asociado = get_patient_for_user(usuario)
+            if paciente_asociado:
+                queryset = queryset.filter(paciente=paciente_asociado)
+            else:
+                queryset = Doctor.objects.none()
+        else:
+            queryset = Doctor.objects.none()
+
+        return queryset
+    
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['search_form'] = DoctorSearchForm(self.request.GET)
+        usuario = self.request.user
+        pacientes = []
+
+        # Agregar el propio usuario si es un paciente
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes.append(usuario)
+
+        # Agregar pacientes asociados si el usuario es un familiar o cuidador
+        if usuario.groups.filter(name__in=['Familiar', 'Cuidador']).exists():
+            solicitudes_aceptadas = RequestPatient.objects.filter(
+                solicitante=usuario,
+                estado=RequestPatient.ESTADO_ACEPTADO
+            )
+            for solicitud in solicitudes_aceptadas:
+                pacientes.append(solicitud.paciente)
+
+        context['pacientes'] = pacientes
         return context
 
 def doctor_create_view(request):
@@ -61,30 +108,45 @@ def doctor_detail_view(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     return render(request, 'doctor/detail.html', {'doctor': doctor})
 
+@method_decorator(login_required, name='dispatch')
 class AppointmentListView(ListView):
     model = Appointment
     template_name = 'appointment/list.html'
     context_object_name = 'appointments'
 
     def get_queryset(self):
+        usuario = self.request.user
         queryset = super().get_queryset()
-        self.filterset = AppointmentFilter(self.request.GET, queryset=queryset)
-        filtered_qs = self.filterset.qs
+        pacientes_aceptados_ids = RequestPatient.objects.filter(
+            Q(solicitante=usuario) | Q(paciente=usuario),
+            estado=RequestPatient.ESTADO_ACEPTADO
+        ).values_list('paciente_id', flat=True)
 
-        search_query = self.request.GET.get('search')
-        if search_query:
-            filtered_qs = filtered_qs.filter(
-                Q(doctor__nombre__icontains=search_query) |
-                Q(motivo__icontains=search_query) |
-                Q(acompanante__icontains=search_query) |
-                Q(nota__icontains=search_query) | # Se agregó este campo
-                Q(tipo__icontains=search_query)   # Se agregó este campo
-            )
-        return filtered_qs
+        # Si el usuario es un paciente, se añade su propio id
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes_aceptados_ids = list(pacientes_aceptados_ids) + [usuario.id]
+
+        return queryset.filter(paciente_id__in=pacientes_aceptados_ids)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filterset'] = self.filterset
+        usuario = self.request.user
+        pacientes = []
+
+        # Agregar el propio usuario si es un paciente
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes.append(usuario)
+
+        # Agregar pacientes asociados si el usuario es un familiar o cuidador
+        if usuario.groups.filter(name__in=['Familiar', 'Cuidador']).exists():
+            solicitudes_aceptadas = RequestPatient.objects.filter(
+                solicitante=usuario,
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).select_related('paciente')
+            for solicitud in solicitudes_aceptadas:
+                pacientes.append(solicitud.paciente)
+
+        context['pacientes'] = pacientes
         return context
 
 def appointment_create_view(request):
@@ -136,21 +198,53 @@ def appointment_delete_view(request, pk):
         return redirect('consultations:appointment_list')
     return render(request, 'appointment/delete.html', {'appointment': appointment})
 
+@method_decorator(login_required, name='dispatch')
 class ConsultationListView(ListView):
     model = Consultation
     template_name = 'consultation/list.html'
     context_object_name = 'consultations'
 
     def get_queryset(self):
+        usuario = self.request.user
         queryset = super().get_queryset()
-        self.filterset = ConsultationFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs
+        paciente_id = self.request.GET.get('paciente')
+
+        if paciente_id:
+            queryset = queryset.filter(paciente__id=paciente_id)
+        else:
+            pacientes_aceptados_ids = RequestPatient.objects.filter(
+                Q(solicitante=usuario) | Q(paciente=usuario),
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).values_list('paciente_id', flat=True)
+
+            # Si el usuario es un paciente, se añade su propio id
+            if usuario.groups.filter(name='Paciente').exists():
+                pacientes_aceptados_ids = list(pacientes_aceptados_ids) + [usuario.id]
+
+            queryset = queryset.filter(paciente_id__in=pacientes_aceptados_ids)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filterset'] = self.filterset
-        return context
+        usuario = self.request.user
+        pacientes = []
 
+        # Agregar el propio usuario si es un paciente
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes.append(usuario)
+
+        # Agregar pacientes asociados si el usuario es un familiar o cuidador
+        if usuario.groups.filter(name__in=['Familiar', 'Cuidador']).exists():
+            solicitudes_aceptadas = RequestPatient.objects.filter(
+                solicitante=usuario,
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).select_related('paciente')
+            for solicitud in solicitudes_aceptadas:
+                pacientes.append(solicitud.paciente)
+
+        context['pacientes'] = pacientes
+        return context
 def consultation_create_view(request):
     if request.method == 'POST':
         form = ConsultationForm(request.POST, request.FILES)
@@ -186,37 +280,58 @@ def consultation_detail_view(request, pk):
     consultation = get_object_or_404(Consultation, pk=pk)
     return render(request, 'consultation/detail.html', {'consultation': consultation})
 
+@method_decorator(login_required, name='dispatch')
 class PrescriptionListView(ListView):
     model = Prescription
     template_name = 'prescription/list.html'
     context_object_name = 'prescriptions'
 
     def get_queryset(self):
+        usuario = self.request.user
         queryset = super().get_queryset()
-        self.filterset = PrescriptionFilter(self.request.GET, queryset=queryset)
-        queryset = self.filterset.qs  # Aplica los filtros primero
+        paciente_id = self.request.GET.get('paciente')
 
-        search_query = self.request.GET.get('search')
-        if search_query:
-            # Actualiza el queryset con el filtro de búsqueda
-            queryset = queryset.filter(
-                Q(consulta__cita__doctor__nombre__icontains=search_query) |
-                Q(consulta__cita__motivo__icontains=search_query) |
-                Q(consulta__diagnostico__icontains=search_query) |
-                Q(producto__nombre_local__icontains=search_query) |
-                Q(dosis__icontains=search_query) |
-                Q(frecuencia__icontains=search_query)
-            )
+        if paciente_id:
+            queryset = queryset.filter(paciente__id=paciente_id)
+        else:
+            pacientes_aceptados_ids = RequestPatient.objects.filter(
+                Q(solicitante=usuario) | Q(paciente=usuario),
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).values_list('paciente_id', flat=True)
+
+            # Si el usuario es un paciente, se añade su propio id
+            if usuario.groups.filter(name='Paciente').exists():
+                pacientes_aceptados_ids = list(pacientes_aceptados_ids) + [usuario.id]
+
+            queryset = queryset.filter(paciente_id__in=pacientes_aceptados_ids)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filterset'] = self.filterset
+        usuario = self.request.user
+        pacientes = []
+
+        # Agregar el propio usuario si es un paciente
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes.append(usuario)
+
+        # Agregar pacientes asociados si el usuario es un familiar o cuidador
+        if usuario.groups.filter(name__in=['Familiar', 'Cuidador']).exists():
+            solicitudes_aceptadas = RequestPatient.objects.filter(
+                solicitante=usuario,
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).select_related('paciente')
+            for solicitud in solicitudes_aceptadas:
+                pacientes.append(solicitud.paciente)
+
+        context['pacientes'] = pacientes
         return context
 
+
+@login_required
 def prescription_create_view(request):
     if request.method == 'POST':
-        print(request.POST)
         form = PrescriptionForm(request.POST, request.FILES)
         if form.is_valid():
             prescription = form.save()
@@ -230,9 +345,11 @@ def prescription_create_view(request):
             messages.success(request, 'Prescripción creada con éxito.')
             return redirect('consultations:prescription_list')
     else:
-        print(form.errors)
         form = PrescriptionForm()
+    
+    # Asegúrate de que la variable 'form' se pasa al contexto en ambos casos, POST y GET.
     return render(request, 'prescription/create.html', {'form': form})
+
 
 
 def prescription_update_view(request, pk):
@@ -259,20 +376,52 @@ def prescription_detail_view(request, pk):
     prescription = get_object_or_404(Prescription, pk=pk)
     return render(request, 'prescription/detail.html', {'prescription': prescription})
 
+@method_decorator(login_required, name='dispatch')
 class AnalysisListView(ListView):
     model = Analysis
     template_name = 'analysis/list.html'
     context_object_name = 'analyses'
 
     def get_queryset(self):
+        usuario = self.request.user
         queryset = super().get_queryset()
-        self.filterset = AnalysisFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs
+        paciente_id = self.request.GET.get('paciente')
+
+        if paciente_id:
+            queryset = queryset.filter(paciente__id=paciente_id)
+        else:
+            pacientes_aceptados_ids = RequestPatient.objects.filter(
+                Q(solicitante=usuario) | Q(paciente=usuario),
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).values_list('paciente_id', flat=True)
+
+            # Si el usuario es un paciente, se añade su propio id
+            if usuario.groups.filter(name='Paciente').exists():
+                pacientes_aceptados_ids = list(pacientes_aceptados_ids) + [usuario.id]
+
+            queryset = queryset.filter(paciente_id__in=pacientes_aceptados_ids)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filterset'] = self.filterset
-        context['filter_form'] = AnalysisFilterForm(self.request.GET)
+        usuario = self.request.user
+        pacientes = []
+
+        # Agregar el propio usuario si es un paciente
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes.append(usuario)
+
+        # Agregar pacientes asociados si el usuario es un familiar o cuidador
+        if usuario.groups.filter(name__in=['Familiar', 'Cuidador']).exists():
+            solicitudes_aceptadas = RequestPatient.objects.filter(
+                solicitante=usuario,
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).select_related('paciente')
+            for solicitud in solicitudes_aceptadas:
+                pacientes.append(solicitud.paciente)
+
+        context['pacientes'] = pacientes
         return context
 
 def analysis_create_view(request):

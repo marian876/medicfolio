@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        {% include "snippets/title.html" with title='Perfil del Solicitante' %}
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <div class="profile-image-container mb-4">
+                    {% if user.profile.foto %}
+                        <img src="{{ user.profile.foto.url }}" alt="Foto de perfil" class="img-fluid" style="max-width: 50%;">
+                    {% else %}
+                        <p>No hay imagen de perfil cargada.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-8">
+                <table class="table">
+                    <tr>
+                        <th>Nombre</th>
+                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Apellido</th>
+                        <td>{{ user.last_name }} {{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Correo Electrónico</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+
+                </table>
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Volver</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

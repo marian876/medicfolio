@@ -5,7 +5,8 @@ from .models import Specialty, Presentation, Product
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column
 from medication.models import ActiveProduct
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -15,7 +16,7 @@ class ProductForm(forms.ModelForm):
             'presentacion', 'cantidad_caja', 'precio', 'especialidad', 'compuesto_principal',
             'descripcion', 'usos', 'posologia', 'embarazo',
             'lactancia', 'contraindicaciones', 'precauciones', 'reacciones_adversas',
-            'interacciones', 'fabricante', 'pais', 'codigo_barras', 'imagen_caja'
+            'interacciones', 'fabricante', 'pais', 'codigo_barras', 'imagen_caja','paciente'
         ]
         widgets = {
             'nombre_local': forms.TextInput(attrs={'class': 'form-control', 'maxlength': '50'}),
@@ -121,6 +122,12 @@ class ProductFilterForm(forms.Form):
         label="Especialidad",
         empty_label="Cualquier especialidad"
     )
+    paciente = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        label="Paciente",
+        empty_label="Cualquier paciente"
+    )
     def __init__(self, *args, **kwargs):
         super(ProductFilterForm, self).__init__(*args, **kwargs)
         self.fields['con_prescripcion'].widget.attrs.update({'class': 'form-check-input'})
@@ -130,3 +137,7 @@ class ProductFilterForm(forms.Form):
 
 class ProductSearchForm(forms.Form):
     search = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buscar'}))
+    paciente_search = forms.CharField(
+        required=False, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buscar Paciente'})
+    )

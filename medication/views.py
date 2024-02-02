@@ -2,10 +2,17 @@
 
 from django.shortcuts import get_object_or_404
 from django.views.generic.list import ListView
+
+from users.models import RequestPatient
 from .models import Product, Prescription
 from .filters import MedicationFilter
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
+from django.db.models import Q
+from django.conf import settings
+from django.apps import apps
+
+UserModel = apps.get_model(settings.AUTH_USER_MODEL)
 
 class ActiveProductListView(ListView):
     model = Product
@@ -13,28 +20,27 @@ class ActiveProductListView(ListView):
     filterset_class = MedicationFilter
 
     def get_queryset(self):
-        # Filtra para obtener solo los productos con al menos una prescripción activa
+        usuario = self.request.user
         queryset = super().get_queryset().filter(prescriptions__activa=True).distinct()
+
+        # Aquí se filtra por paciente si se proporciona
+        paciente_id = self.request.GET.get('paciente')
+        if paciente_id:
+            queryset = queryset.filter(paciente_id=paciente_id)
+        else:
+            pass
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        days_to_consult = int(self.request.GET.get('days', 1))
-
-        products_with_insufficient_stock = []
-        for product in context['object_list']:
-            active_prescription = product.prescriptions.filter(activa=True).first()
-            if active_prescription:
-                total_doses_needed = active_prescription.dosis * days_to_consult
-                if product.existencia < total_doses_needed:
-                    products_with_insufficient_stock.append({
-                        'product': product,
-                        'existencia': product.existencia,
-                        'faltan': total_doses_needed - product.existencia
-                    })
-
-        context['insufficient_stock_products'] = products_with_insufficient_stock
-        context['days'] = days_to_consult
+        # Añadir la lista de pacientes al contexto
+        context['pacientes'] = UserModel.objects.filter(
+            id__in=RequestPatient.objects.filter(
+                Q(solicitante=self.request.user) | Q(paciente=self.request.user),
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).values_list('paciente_id', flat=True)
+        )
         return context
 
 
@@ -73,6 +79,3 @@ def export_products_pdf(request):
     p.save()
 
     return response
-
-
-

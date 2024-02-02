@@ -6,7 +6,7 @@
 <form method="get" class="input-group mb-3 mt-2" id="search-form">
     <input type="text" name="search" class="form-control" placeholder="Buscar" value="{{ request.GET.search }}">
     <div class="input-group-append">
-        <button type="submit" class="btn btn-sm btn-outline-secondary">Buscar</button>
+        <button type="submit" class="btn btn-outline-secondary">Buscar</button>
         <a href="{% url 'consultations:appointment_create' %}" class="btn btn-primary ms-2">Nueva</a>
     </div>
     {% for key, value in filterset.data.items %}
@@ -14,4 +14,16 @@
             <input type="hidden" name="{{ key }}" value="{{ value }}">
         {% endif %}
     {% endfor %}
+</form>
+<form method="get">
+    <label for="pacienteFiltro">Filtrar por paciente:</label>
+    <select name="paciente" id="pacienteFiltro">
+        <option value="">Todos los pacientes</option>
+        {% for paciente in pacientes %}
+            <option value="{{ paciente.id }}" {% if request.GET.paciente == paciente.id|stringformat:"s" %}selected{% endif %}>
+                {{ paciente.get_full_name }}
+            </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Filtrar">
 </form>

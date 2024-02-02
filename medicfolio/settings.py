@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'medication',
     'dashboard',
     'care',
+    'mycalendar',
 ]
 
 MIDDLEWARE = [
@@ -67,7 +68,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dispensers.context_processors.cart_processor',  
+                'dispensers.context_processors.cart_processor',
+                'users.context_processors.open_requests',
+                'users.context_processors.is_patient',  
             ],
         },
     },

@@ -1,9 +1,5 @@
 {% load static %}
 
-{% url 'index' as index %}
-{% url 'login' as login %}
-{% url 'register' as register %}
-{% url 'logout' as logout %}
 {% url 'dispensers:dispenser' as dispenser %}
 
 <nav class="navbar navbar-expand-lg custom-navbar-bg navbar-light">
@@ -17,7 +13,7 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav me-auto">
                 {% if user.is_authenticated %}
-                    <a class="nav-link text-white {% if request.path == index %}active{% endif %}" href="{{ index }}">
+                    <a class="nav-link text-white {% if request.path == '/' %}active{% endif %}" href="{% url 'dashboard:dashboard' %}">
                         Inicio
                     </a>
                     <li class="nav-item dropdown">
@@ -65,22 +61,49 @@
                 {% endif %}
 
                 {% if user.is_authenticated %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownUserMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ user.username }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUserMenu">
-                        <li><a class="dropdown-item" href="{% url 'profile_edit' %}"><i class="fas fa-user-edit"></i> Editar Perfil</a></li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
-                    </ul>
-                </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownUserMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.first_name }}
+                            {% if open_requests|length > 0 %}
+                                <span class="badge bg-danger">{{ open_requests|length }}</span>
+                            {% endif %}
+                        </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUserMenu"> <!-- Nota la clase aquí -->
+                        <li>
+                            <a class="nav-link text-white" href="#">
+                                <i class="fas fa-envelope"></i> Avisos
+                                {% if open_requests|length > 0 %}
+                                    <span class="badge bg-danger">{{ open_requests|length }}</span>
+                                {% endif %}
+                            </a>
+                            {% for group in user.groups.all %}
+                                {% if group.name == "Paciente" %}
+                                    <a href="{% url 'users:patient_profile_edit' %}" class="nav-link text-white">
+                                        <i class="fas fa-user-edit"></i> Editar Perfil</a>
+                                {% elif group.name == "Familiar" %}
+                                    <a href="{% url 'users:family_profile_edit' %}" class="nav-link text-white">
+                                        <i class="fas fa-user-edit"></i> Editar Perfil</a>
+                                {% endif %}
+                                {% if group.name == "Cuidador" %}
+                                    <a href="{% url 'users:care_profile_edit' %}" class="nav-link text-white">
+                                    <i class="fas fa-user-edit"></i> Editar Perfil</a>
+                                {% endif %}                                
+                          {% endfor %}
+                            {% if not is_patient %}
+                                <a class="nav-link text-white" href="{% url 'users:view_request' %}">
+                                    <i class="fas fa-user-plus"></i>Pacientes
+                                </a>
+                            {% endif %}
+                            <a class="nav-link text-white" href="{% url 'users:logout' %}">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                            </a>
                 {% else %}
-                    <a class="nav-link text-white {% if request.path == login %}active{% endif %}" href="{{ login }}">
-                        <i class="fas fa-sign-in-alt"></i> Ingresar
-                    </a>
-                    <a class="nav-link text-white {% if request.path == register %}active{% endif %}" href="{{ register }}">
-                        <i class="fas fa-user-plus"></i> Registrarse
-                    </a>
+                        <a class="nav-link text-white {% if request.path == login %}active{% endif %}" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar
+                        </a>
+                        <a class="nav-link text-white {% if request.path == register %}active{% endif %}" href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus"></i> Registrarse
+                        </a>
                 {% endif %}
             </div>
         </div>

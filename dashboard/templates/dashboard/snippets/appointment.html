@@ -8,25 +8,17 @@
         </tr>
     </thead>
     <tbody>
-        {% if appointments_active %}
-            {% for appointment in appointments_active %}
+        {% if appointments %}
+            {% for appointment in appointments %}
             <tr>
-                <td>
-                    <a href="{% url 'consultations:appointment_detail' appointment.pk %}">
-                        {{ appointment.doctor.nombre }}
-                    </a>
-                </td>
+                <td><a href="{% url 'consultations:doctor_detail' appointment.doctor.pk %}">{{ appointment.doctor.nombre }}</a></td>
                 <td>{{ appointment.fecha_hora|date:"d/m/Y H:i" }}</td>
                 <td>{{ appointment.motivo }}</td>
                 <td>{{ appointment.acompanante }}</td>
             </tr>
             {% endfor %}
         {% else %}
-            <tr>
-                <td colspan="7">No hay citas disponibles.</td>
-            </tr>
+            <tr><td colspan="4">No hay citas disponibles.</td></tr>
         {% endif %}
     </tbody>
 </table>
-
-

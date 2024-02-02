@@ -6,6 +6,7 @@ from .models import Product, Presentation, Specialty
 class ProductAdmin(admin.ModelAdmin):
     fields = (
         'nombre_local',
+        'paciente',
         'venta_controlada',
         'fabricante',
         'presentacion',

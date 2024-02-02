@@ -1,0 +1,35 @@
+
+<div id='calendar'></div>
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: [ 'dayGrid' ],
+            locale: 'es',
+            events: function(fetchInfo, successCallback, failureCallback) {
+                // Aquí construyes la URL con el filtro de paciente aplicado, si existe
+                var url = '/calendario/';
+                var pacienteId = new URLSearchParams(window.location.search).get('paciente');
+                if (pacienteId) {
+                    url += '?paciente=' + pacienteId;
+                }
+                fetch(url)
+                    .then(response => response.json())
+                    .then(events => successCallback(events))
+                    .catch(error => failureCallback(error));
+            }
+        });
+        calendar.render();
+    
+        // Aquí puedes agregar el evento 'change' al filtro, si deseas recargar el calendario
+        // automáticamente cuando se selecciona un paciente diferente.
+        document.getElementById('pacienteFiltro').addEventListener('change', function() {
+            // Esto provocará que FullCalendar vuelva a buscar los eventos con el nuevo filtro aplicado.
+            calendar.refetchEvents();
+        });
+    });
+    
+</script>
+{% endblock %}

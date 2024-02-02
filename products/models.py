@@ -5,6 +5,9 @@ from django.utils.text import slugify
 from django.db.models.signals import pre_save
 import uuid
 from django.db.models import Sum
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 
 
 class Presentation(models.Model):
@@ -55,7 +58,14 @@ class Product(models.Model):
     
     slug=models.SlugField(null=True, blank=True, unique=True)
     creado_el = models.DateTimeField("Creado el", auto_now_add=True)
-    
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='productos_creados')
+
+    paciente = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='productos_asociados', 
+        verbose_name=_("Paciente")
+    )
     @property
     def active_prescriptions(self):
         # Esto asume que existe al menos una prescripción activa para el producto

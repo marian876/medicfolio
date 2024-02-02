@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "snippets/title.html" with title='Solicitudes de pacientes' %}
+
+    <form method="post" action="{% url 'users:request_patient' %}"> 
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="paciente" class="form-label">Seleccione el nombre de su Paciente:</label>
+            <select name="paciente_id" id="paciente" class="form-select">
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}">{{ paciente.get_full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Solicitar</button>
+        <button type="button" onclick="history.back()" class="btn btn-secondary mt-2">Volver</button>
+    </form>
+{% endblock %}

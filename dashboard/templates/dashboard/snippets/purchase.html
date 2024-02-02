@@ -13,7 +13,7 @@
                 </td>
                 <td style="{% if product.dias_de_cobertura < 1 and product.dias_de_cobertura != 99999 %}color: red;{% endif %}">
                     {% if product.dias_de_cobertura == 99999 %}
-                        N/A
+                        0 días
                     {% else %}
                         {{ product.dias_de_cobertura }} días
                     {% endif %}

@@ -1,43 +1,71 @@
-from django.views.generic import ListView
 from django.shortcuts import render
-from consultations.models import Appointment
+from django.utils.translation import gettext_lazy as _
+from consultations.models import Prescription, Appointment
+from users.models import RequestPatient
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.db.models import Subquery, OuterRef
+from consultations.models import Prescription, Appointment
 from products.models import Product
 
-# Esta vista basada en clase maneja la lista de citas pendientes
-class DashboardAppointmentListView(ListView):
-    model = Appointment
-    template_name = 'dashboard/snippets/appointment.html'
-    context_object_name = 'appointments_active'
+def get_patients_for_user(usuario):
+    pacientes = []
+    if usuario.groups.filter(name='Familiar').exists() or usuario.groups.filter(name='Cuidador').exists():
+        solicitudes = RequestPatient.objects.filter(
+            Q(solicitante=usuario) | Q(paciente=usuario),
+            estado=RequestPatient.ESTADO_ACEPTADO
+        )
+        for solicitud in solicitudes:
+            pacientes.append(solicitud.paciente)
+    elif usuario.groups.filter(name='Paciente').exists():
+        pacientes.append(usuario)
+    return pacientes
 
-    def get_queryset(self):
-        return Appointment.objects.filter(pendiente=True).order_by('fecha_hora')
-
-# Esta vista basada en clase maneja la lista de productos con prescripciones activas
-class DashboardMedicationListView(ListView):
-    model = Product
-    template_name = 'dashboard/snippets/medication.html'
-    context_object_name = 'prescription_products'
-
-    def get_queryset(self):
-        return Product.objects.filter(prescriptions__activa=True).distinct()
-
-# Esta función de vista combina la información de citas y productos para el dashboard
+@login_required
 def dashboard_view(request):
-    appointments_active = DashboardAppointmentListView().get_queryset()
-    prescription_products = DashboardMedicationListView().get_queryset()
+    usuario = request.user
+    paciente_id = request.GET.get('paciente')
+    
+    pacientes_relacionados = get_patients_for_user(usuario)
+    pacientes_aceptados_ids = [paciente.id for paciente in pacientes_relacionados]
+    
+    # Subconsulta para obtener la última prescripción para cada producto
+    ultima_prescripcion_subquery = Prescription.objects.filter(
+        producto_id=OuterRef('pk'),
+        paciente_id=OuterRef('paciente_id')
+    ).order_by('-creado_el').values('creado_el')[:1]
+    
+    if paciente_id:
+        paciente_id = int(paciente_id)  # Convertir a entero si es necesario
+        appointments = Appointment.objects.filter(paciente_id=paciente_id, pendiente=True).order_by('creado_el')
+        # Filtrar las prescripciones activas y obtener la última para cada producto
+        prescription_products = Prescription.objects.filter(
+            paciente_id=paciente_id,
+            activa=True
+        ).annotate(
+            ultima_prescripcion=Subquery(ultima_prescripcion_subquery)
+        ).order_by('-ultima_prescripcion')
+    else:
+        appointments = Appointment.objects.filter(paciente_id__in=pacientes_aceptados_ids, pendiente=True).order_by('creado_el')
+        prescription_products = Prescription.objects.filter(
+            paciente_id__in=pacientes_aceptados_ids,
+            activa=True
+        ).annotate(
+            ultima_prescripcion=Subquery(ultima_prescripcion_subquery)
+        ).order_by('-ultima_prescripcion')
+    
+    # Lista de productos a comprar
+    products_to_purchase = [
+        prescripcion.producto for prescripcion in prescription_products
+        if prescripcion.producto.dias_de_cobertura <= 7 or prescripcion.producto.dias_de_cobertura == 99999
+    ]
 
+    
     context = {
-        'appointments_active': appointments_active,
+        'appointments': appointments,
         'prescription_products': prescription_products,
+        'products_to_purchase': products_to_purchase,
+        'pacientes_activos': pacientes_relacionados,
     }
-
-    return render(request, 'dashboard.html', context)
-
-class DashboardPurchaseListView(ListView):
-    model = Product
-    template_name = 'dashboard/snippets/purchase.html'
-    context_object_name = 'products_purchase'
-
-    def get_queryset(self):
-        days_to_consider = self.request.GET.get('days', 7)  
-        return Product.objects.filter(dias_de_cobertura__lte=days_to_consider)
+    
+    return render(request, 'dashboard/dashboard.html', context)

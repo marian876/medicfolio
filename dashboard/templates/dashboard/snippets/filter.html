@@ -1,0 +1,14 @@
+<!-- Selector de pacientes en dashboard/dashboard.html -->
+<form method="get">
+    <label for="pacienteFiltro">Filtrar por paciente:</label>
+    <select name="paciente" id="pacienteFiltro">
+        <option value="">Todos los pacientes</option>
+        {% for paciente in pacientes_activos %}
+            <option value="{{ paciente.id }}" {% if request.GET.paciente == paciente.id|stringformat:"s" %}selected{% endif %}>
+                {{ paciente.get_full_name }}
+            </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Filtrar">
+</form>
+

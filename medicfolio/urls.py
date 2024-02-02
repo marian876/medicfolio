@@ -6,10 +6,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('usuarios/login', views.login_view, name='login'),
-    path('usuarios/logout', views.logout_view, name='logout'),
-    path('usuarios/registro', views.register_view, name='register'),
-
 
     path('admin/', admin.site.urls),
     path('productos/', include('products.urls')),
@@ -19,5 +15,7 @@ urlpatterns = [
     path('medicacion/', include('medication.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('usuarios/', include('users.urls')),
+    path('calendario/', include('mycalendar.urls')),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

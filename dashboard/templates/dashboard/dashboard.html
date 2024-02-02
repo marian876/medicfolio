@@ -1,34 +1,54 @@
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <!-- Contenido para usuarios autenticados -->
+        <div class="container mt-4">
+            <div class="container">
+                <div class="row justify-content-center mb-4"> <!-- Añadido mb-4 aquí -->
+                    <div class="col-md-11">
+                        {% include "dashboard/snippets/filter.html" %}
+                   </div>
+                </div>
+            </div>
+            <div class="card mb-4"> <!-- Añadido mb-4 aquí para mantener consistencia entre las cards -->
+                <div class="card-body">
+                    {% include "mycalendar/view.html" %}
+                </div>
+            </div>        
+            <div class="card mb-4"> <!-- Añadido mb-4 aquí para mantener consistencia entre las cards -->
                 <div class="card-header ">
                     <h1 class="text-center mb-4">Citas pendientes</h1>
                 </div>
                 <div class="card-body">
-                    {% include "dashboard/snippets/appointment.html" with appointments_active=appointments_active %}
+                    {% include "dashboard/snippets/appointment.html" with appointments=appointments %}
+                </div>
+            </div>
+            <div class="col-12 mb-4"> <!-- Añadido mb-4 aquí para mantener consistencia entre las cards -->
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="text-center mb-4">Medicamentos Actuales</h1>
+                    </div>
+                    <div class="card-body">
+                        {% include "dashboard/snippets/medication.html" with prescription_products=prescription_products %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="text-center mb-4">Compras necesarias para la semana</h1>
+                    </div>
+                    <div class="card-body">
+                        {% include "dashboard/snippets/purchase.html" with products_to_purchase=products_to_purchase %}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="text-center mb-4">Medicamentos Actuales</h1>
-                </div>
-                <div class="card-body">
-                {% include "dashboard/snippets/medication.html" with prescription_products=prescription_products %}
-            </div>
-        </div>
-    </div>
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h1 class="text-center mb-4">Compras necesarias para la semana</h1>
-            </div>
-            <div class="card-body">
-                {% include "dashboard/snippets/purchase.html" with products_to_purchase=products_purchase %}
-            </div>
-        </div>
-    </div>
-    </div>
-</div>
+    {% else %}
+        {% include "snippets/presentation.html" %}
+    {% endif %}
+{% endblock content %}

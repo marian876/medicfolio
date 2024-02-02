@@ -10,18 +10,27 @@ from django.db.models import Q
 from django.shortcuts import render
 from .filters import ProductFilter
 from django_filters.views import FilterView
-
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from .filters import ProductFilter
 from .models import Product, Presentation, Specialty
 from .forms import ProductFilterForm, SpecialtyForm, SpecialtySearchForm, PresentationForm, PresentationSearchForm, ProductForm, ProductSearchForm
 from medication.models import ActiveProduct
 from consultations.models import Prescription
-from django.db.models import Exists, OuterRef
+from django.db.models import Q, OuterRef, Exists
+from django.shortcuts import render
+from users.models import RequestPatient
+from django.conf import settings
+from django.apps import apps
+
+UserModel = apps.get_model(settings.AUTH_USER_MODEL)
 
 
 def index(request):
     return render(request, 'index.html')
 
+
+@method_decorator(login_required, name='dispatch')
 class ProductListView(FilterView):
     model = Product
     filterset_class = ProductFilter
@@ -59,26 +68,43 @@ class ProductListView(FilterView):
                 Q(codigo_barras__icontains=search_query)
             )
 
+        # Filtrar por paciente
+        paciente_id = self.request.GET.get('paciente')
+        if paciente_id:
+            queryset = queryset.filter(paciente_id=paciente_id)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        usuario = self.request.user
         context['filter_form'] = ProductFilterForm(self.request.GET or None)
         context['search_form'] = ProductSearchForm(self.request.GET or None)
+
+        # Lista de pacientes con estado 'Aceptado'
+        if usuario.groups.filter(name='Paciente').exists():
+            context['pacientes'] = [usuario]
+        else:
+            solicitudes_aceptadas = RequestPatient.objects.filter(
+                solicitante=usuario,
+                estado=RequestPatient.ESTADO_ACEPTADO
+            ).select_related('paciente')
+            context['pacientes'] = [s.paciente for s in solicitudes_aceptadas]
+
         return context
     
+@method_decorator(login_required, name='dispatch')
 class ProductListShortView(ListView):
     model = Product
     template_name = 'products/list_short.html'
     context_object_name = 'products'
 
     def get_queryset(self):
-        # Filtra inicialmente por uso_cotidiano=True
         queryset = Product.objects.filter(uso_cotidiano=True).order_by('nombre_local')
-        self.filter_form = ProductFilterForm(self.request.GET or None)
+        filter_form = ProductFilterForm(self.request.GET or None)
 
-        if self.filter_form.is_valid():
-            if self.filter_form.cleaned_data.get('con_prescripcion'):
+        if filter_form.is_valid():
+            if filter_form.cleaned_data.get('con_prescripcion'):
                 prescripciones_activas = Prescription.objects.filter(
                     producto=OuterRef('pk'),
                     activa=True
@@ -87,15 +113,21 @@ class ProductListShortView(ListView):
                     tiene_prescripcion_activa=Exists(prescripciones_activas)
                 ).filter(tiene_prescripcion_activa=True)
 
-            if self.filter_form.cleaned_data.get('sin_existencia'):
+            if filter_form.cleaned_data.get('sin_existencia'):
                 queryset = queryset.filter(existencia=0)
             
-            if self.filter_form.cleaned_data.get('venta_controlada'):
+            if filter_form.cleaned_data.get('venta_controlada'):
                 queryset = queryset.filter(venta_controlada=True)
 
-        self.search_form = ProductSearchForm(self.request.GET or None)
-        if self.search_form.is_valid() and self.search_form.cleaned_data.get('search'):
-            search_query = self.search_form.cleaned_data['search']
+        # Filtrar por paciente
+        paciente_id = self.request.GET.get('paciente')
+        if paciente_id:
+            queryset = queryset.filter(paciente_id=paciente_id)
+
+        # Búsqueda
+        search_form = ProductSearchForm(self.request.GET or None)
+        if search_form.is_valid() and search_form.cleaned_data.get('search'):
+            search_query = search_form.cleaned_data.get('search')
             queryset = queryset.filter(
                 Q(nombre_local__icontains=search_query) |
                 Q(descripcion__icontains=search_query) |
@@ -109,10 +141,23 @@ class ProductListShortView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filter_form'] = self.filter_form
-        context['search_form'] = self.search_form
+        context['filter_form'] = ProductFilterForm(self.request.GET or None)
+        context['search_form'] = ProductSearchForm(self.request.GET or None)
+
+        usuario = self.request.user
+        pacientes_aceptados_ids = RequestPatient.objects.filter(
+            Q(solicitante=usuario) | Q(paciente=usuario),
+            estado=RequestPatient.ESTADO_ACEPTADO
+        ).values_list('paciente_id', flat=True)
+        
+        if usuario.groups.filter(name='Paciente').exists():
+            pacientes_aceptados_ids = list(pacientes_aceptados_ids) + [usuario.id]
+        
+        context['pacientes'] = UserModel.objects.filter(id__in=pacientes_aceptados_ids)
+
         return context
 
+    
 class ProductDetailView(DetailView):
     model=Product
     template_name='products/product.html'

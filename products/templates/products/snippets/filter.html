@@ -1,4 +1,5 @@
 <div class="container centrar-filtros">
+    <!-- Filtros generales de productos -->
     <form method="get" class="d-flex flex-column flex-md-row align-items-center justify-content-center">
         <div class="form-check mb-2 me-md-2 col-12 col-md-auto">
             {{ filter_form.uso_cotidiano.label_tag }}
@@ -24,4 +25,18 @@
             <button type="submit" class="btn btn-sm btn-primary mb-3">Filtrar</button>
         </div>
     </form>
+
+    <form method="get">
+        <label for="pacienteFiltro">Filtrar por paciente:</label>
+        <select name="paciente" id="pacienteFiltro">
+            <option value="">Todos los pacientes</option>
+            {% for paciente in pacientes %}
+                <option value="{{ paciente.id }}" {% if request.GET.paciente == paciente.id|stringformat:"s" %}selected{% endif %}>
+                    {{ paciente.get_full_name }}
+                </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Filtrar">
+    </form>
 </div>
+

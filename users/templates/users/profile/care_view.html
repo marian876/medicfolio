@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "snippets/title.html" with title='Actualiza el Perfil de Cuidador' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center mb-4">
+                    {% if care_profile.foto %}
+                        <img src="{{ care_profile.foto.url }}" alt="Foto de perfil" class="img-fluid" style="max-width: 75%;">
+                    {% else %}
+                        <p>No hay imagen de perfil cargada.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-8">
+                <form class="needs-validation" novalidate method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Nombre de usuario</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+                            {{ form.username.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                            {{ form.email.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                            {{ form.last_name.errors }}
+                        </div>
+                        
+                    </div>
+            </div>
+
+        <div class="row g-3">
+            <div class="col-md-6 mb-3">
+                <label for="celular" class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="celular" name="celular" value="{{ form.celular.value }}">
+                {{ form.celular.errors }}
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="disponibilidad" class="form-label">Disponibilidad</label>
+                <textarea class="form-control" id="disponibilidad" name="disponibilidad">{{ form.disponibilidad.value }}</textarea>
+                {{ form.experiencia.errors }}
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="experiencia" class="form-label">Experiencia laboral</label>
+                <textarea class="form-control" id="experiencia" name="experiencia">{{ form.experiencia.value }}</textarea>
+                {{ form.experiencia.errors }}
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="recomendacion" class="form-label">Recomendaciones</label>
+                <textarea class="form-control" id="recomendacion" name="recomendacion">{{ form.recomendacion.value }}</textarea>
+                {{ form.recomendacion.errors }}
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="educacion" class="form-label">Educación</label>
+                <textarea class="form-control" id="educacion" name="educacion">{{ form.educacion.value }}</textarea>
+                {{ form.educacion.errors }}
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="comentario" class="form-label">Comentarios adicionales</label>
+                <textarea class="form-control" id="comentario" name="comentario">{{ form.comentario.value }}</textarea>
+                {{ form.comentario.errors }}
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label for="foto" class="form-label">Foto</label>
+                {{ form.foto }}
+                {{ form.foto.errors }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2">Actualizar</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary mt-2">Volver</a>
+    </form>
+    </div>
+</div>
+{% endblock %}

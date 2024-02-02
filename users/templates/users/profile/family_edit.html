@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Actualiza el Perfil Familiar' %}
+<div class="container-fluid">
+    <form method="post">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6 mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="first_name" value="{{ user.first_name }}" disabled>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Apellido</label>
+                <input type="text" class="form-control" id="last_name" value="{{ user.last_name }}" disabled>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6 mb-3">
+                <label for="paciente" class="form-label">Paciente(s)</label>
+                <ul class="list-group">
+                {% for paciente_username in pacientes_aprobados %}
+                    <li class="list-group-item">{{ paciente_username }}</li>
+                {% empty %}
+                    <li class="list-group-item">No hay pacientes asociados.</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="parentezco" class="form-label">Parentezco</label>
+                <ul class="list-group">
+                    {% for relacion in relaciones_aprobadas %}
+                        <li class="list-group-item">{{ relacion.paciente.get_full_name }} - {{ relacion.parentezco }}</li>
+                    {% empty %}
+                        <li class="list-group-item">No hay parentezcos asociados.</li>
+                    {% endfor %}                
+                </ul>
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.celular.label_tag }}
+                {{ form.celular }}
+                {{ form.celular.errors }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.cohabitacion.label_tag }}
+                {{ form.cohabitacion }}
+                {{ form.cohabitacion.errors }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2">Actualizar</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary mt-2">Volver</a>
+    </form>
+</div>
+{% endblock %}

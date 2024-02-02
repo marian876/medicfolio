@@ -2,6 +2,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from products.models import Product, Specialty
+from django.conf import settings
+from users.models import User
+
 
 class Doctor(models.Model):
     nombre = models.CharField(max_length=255, verbose_name=_("Nombre del Médico"))
@@ -11,7 +14,10 @@ class Doctor(models.Model):
     telefono_reserva = models.CharField(max_length=20, blank=True, null=True, verbose_name=_("Teléfono"))
     notas = models.TextField(blank=True, verbose_name=_("Notas"))
     imagen = models.ImageField(upload_to='doctores/', blank=True, null=True, verbose_name=_("Imagen"))
-    
+    paciente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='doctores_asociados', verbose_name=_("Paciente"))
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='doctores_creados')
+    creado_el = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         verbose_name = ("Doctor")
         verbose_name_plural = ("Doctores")
@@ -33,6 +39,9 @@ class Appointment(models.Model):
     pendiente = models.BooleanField(default=True, verbose_name=_("Pendiente"))
     cita_posterior = models.PositiveIntegerField(default=0, verbose_name=_("Días para la siguiente cita"))
     nota = models.TextField(blank=True, verbose_name=_("Notas"))
+    paciente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='citas_asociadas', verbose_name=_("Paciente"))
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='citas_creadas')
+    creado_el = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = _("Cita")
@@ -47,7 +56,10 @@ class Consultation(models.Model):
     diagnostico = models.CharField(max_length=255, blank=True, verbose_name=_("Diagnóstico"))  
     pdf_indicaciones = models.FileField(upload_to='consultations/prescriptions/', null=True, blank=True, verbose_name=_("PDF de Indicaciones"))
     notas = models.TextField(blank=True, verbose_name=_("Notas de la Consulta"))
-    
+    paciente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='consultas_asociadas', verbose_name=_("Paciente"))
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='consultas_creadas')
+    creado_el = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         verbose_name = _("Consulta")
         verbose_name_plural = _("Consultas")
@@ -73,6 +85,9 @@ class Prescription(models.Model):
     periodo = models.PositiveIntegerField(null=True,blank=True, verbose_name=_("Periodo (días)"))
     periodo_indefinido = models.BooleanField(default=False, verbose_name=_("Periodo Indefinido"))
     activa = models.BooleanField(default=True, verbose_name=_("Activa"))
+    paciente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='prescripciones_asociadas', verbose_name=_("Paciente"))
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='prescripciones_creadas')
+    creado_el = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
         return reverse('consultations:prescription_detail', kwargs={'pk': self.pk})
@@ -93,6 +108,9 @@ class Analysis(models.Model):
     descripcion = models.TextField(blank=True, verbose_name=_("Descripción"))
     resultado_pdf = models.FileField(upload_to='analysis/', null=True, blank=True, verbose_name=_("Resultado del Análisis"))
     realizado = models.BooleanField(default=False, verbose_name=_("Realizado"))
+    paciente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='analisis_asociados', verbose_name=_("Paciente"))
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='analisis_creados')
+    creado_el = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = _("Análisis")

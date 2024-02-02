@@ -11,3 +11,19 @@
         {% endif %}
     {% endfor %}
 </form>
+<div class="container">
+    <div class="centrar-filtros">
+        <form method="get" class="d-flex justify-content-center">
+            <label for="pacienteFiltro" class="me-2">Filtrar por paciente:</label>
+            <select name="paciente" id="pacienteFiltro" class="me-2">
+                <option value="">Todos los pacientes</option>
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}" {% if request.GET.paciente == paciente.id|stringformat:"s" %}selected{% endif %}>
+                        {{ paciente.get_full_name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Filtrar" class="btn btn-sm btn-outline-secondary">
+        </form>
+    </div>
+</div>

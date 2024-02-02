@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include "snippets/title.html" with title='Relación entre Personas y Pacientes' %}
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Asociado</th>
+                            <th>Grupo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitud in solicitudes %}
+                        <tr>
+                            <td>{{ solicitud.paciente.get_full_name }}</td>
+                            <td>{{ solicitud.solicitante.get_full_name }}</td>
+                            <td>
+                                {% for group in solicitud.solicitante.groups.all %}
+                                {{ group.name }}
+                                {% empty %}
+                                Sin grupo
+                                {% endfor %}
+                            </td>
+                            <td>{{ solicitud.get_estado_display }}</td>
+                            <td>
+                                {% if solicitud.estado == 'pendiente' %}
+                                <span style="color: green; cursor: pointer;" onclick="location.href='{% url 'users:accept_request' solicitud.id %}'">Aceptar</span> /
+                                <span style="color: red; cursor: pointer;" onclick="location.href='{% url 'users:reject_request' solicitud.id %}'">Rechazar</span>
+                                {% elif solicitud.estado == 'aceptado' %}
+                                <span style="color: grey; cursor: pointer;" onclick="location.href='{% url 'users:finish_request' solicitud.id %}'">Terminar</span>
+                                {% elif solicitud.estado == 'rechazado' %}
+                                <!-- No mostrar ninguna acción -->
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="mb-3">
+                    <a href="{% url 'users:request_patient' %}" class="btn btn-primary mt-2">Nuevo Paciente</a>
+                    <button onclick="history.back()" class="btn btn-secondary mt-2">Volver</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
