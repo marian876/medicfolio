@@ -1,0 +1,22 @@
+{
+    "short_name": "MedicFolio",
+    "name": "Cuidar la salud de la familia entre todos",
+    "icons": [
+      {
+        "src": "/static/images/icono.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/static/images/icono.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#FFFFFF",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#000000"
+  }
+  

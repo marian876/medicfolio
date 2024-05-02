@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
+
 
 app_name = 'users'
 
@@ -16,12 +18,13 @@ urlpatterns = [
     path('finalizar_solicitud/<int:solicitud_id>/', views.finish_request, name='finish_request'),
 
     path('usuario/ver/<int:user_id>/', views.profile_view, name='profile_view'),
-
+    path('usuario/cambiar_contrasena/', views.CustomPasswordChangeView.as_view(), name='password_change'),
 
     path('solicitar_paciente/', views.request_patient, name='request_patient'),
     path('enviar_solicitud/<int:paciente_id>/', views.submit_request, name='submit_request'),
     path('aceptar_solicitud/<int:solicitud_id>/', views.accept_request, name='accept_request'),
     path('rechazar_solicitud/<int:solicitud_id>/', views.reject_request, name='reject_request'),
+    path('solicitud/familiar', views.family_view_request, name='family_view_request'),
     path('solicitud/', views.view_request, name='view_request'),
 ]
 if settings.DEBUG:

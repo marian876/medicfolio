@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bandeja de Entrada{% endblock title %}
+
+{% block content %}
+{% include "snippets/title.html" with title='Bandeja de Entrada' %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <!-- Contenedor flex para el botón, alineado a la derecha -->
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{% url 'messaging:send_message' %}" class="btn btn-primary">Enviar Mensaje</a>
+            </div>
+            {% if mail_messages %}
+            <div class="list-group">
+            {% for message in mail_messages %}
+                <a href="{% url 'messaging:read_message' message.id %}" class="list-group-item list-group-item-action {% if message.is_unread %}font-weight-bold{% endif %}">
+                    De: {{ message.emisor.username }} - {{ message.motivo }}
+                    <span class="text-muted">{{ message.enviado_el|date:"d M Y H:i" }}</span>
+                </a>
+            {% empty %}
+                <p>No tienes mensajes.</p>
+            {% endfor %}
+        {% endif %}
+        
+        </div>
+    </div>
+</div>
+{% endblock content %}

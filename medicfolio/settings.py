@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-(_2#!^1bj(qdcgw*##wbvl191=ryj%j%+qlxblh-oz%&%6ef4j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['profmarian.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['profmarian.pythonanywhere.com', 'localhost', '127.0.0.1', '192.168.0.9']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'dashboard',
     'care',
     'mycalendar',
+    'messaging',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,11 @@ MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+# Password hashing configuration
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',  # Recomendado como el más seguro
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]

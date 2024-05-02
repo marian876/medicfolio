@@ -70,12 +70,15 @@
                         </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUserMenu"> <!-- Nota la clase aquí -->
                         <li>
-                            <a class="nav-link text-white" href="#">
-                                <i class="fas fa-envelope"></i> Avisos
+                            <a class="nav-link text-white" href="{% url 'messaging:inbox' %}">
+                                <i class="fas fa-envelope"></i> Mensajes
                                 {% if open_requests|length > 0 %}
                                     <span class="badge bg-danger">{{ open_requests|length }}</span>
                                 {% endif %}
                             </a>
+                            <a class="nav-link text-white" href="{% url 'users:password_change' %}">
+                                <i class="fas fa-key"></i> Cambiar contraseña </a>
+
                             {% for group in user.groups.all %}
                                 {% if group.name == "Paciente" %}
                                     <a href="{% url 'users:patient_profile_edit' %}" class="nav-link text-white">
@@ -83,17 +86,18 @@
                                 {% elif group.name == "Familiar" %}
                                     <a href="{% url 'users:family_profile_edit' %}" class="nav-link text-white">
                                         <i class="fas fa-user-edit"></i> Editar Perfil</a>
+                                    <a class="nav-link text-white" href="{% url 'users:family_view_request' %}">
+                                        <i class="fas fa-user-plus"></i>Pacientes
+                                    </a>
                                 {% endif %}
-                                {% if group.name == "Cuidador" %}
+                                {% if group.name != "Paciente" and group.name != "Familiar" %}
                                     <a href="{% url 'users:care_profile_edit' %}" class="nav-link text-white">
                                     <i class="fas fa-user-edit"></i> Editar Perfil</a>
+                                    <a class="nav-link text-white" href="{% url 'users:view_request' %}">
+                                        <i class="fas fa-user-plus"></i>Pacientes
+                                    </a>
                                 {% endif %}                                
                           {% endfor %}
-                            {% if not is_patient %}
-                                <a class="nav-link text-white" href="{% url 'users:view_request' %}">
-                                    <i class="fas fa-user-plus"></i>Pacientes
-                                </a>
-                            {% endif %}
                             <a class="nav-link text-white" href="{% url 'users:logout' %}">
                                 <i class="fas fa-sign-out-alt"></i> Cerrar sesión
                             </a>

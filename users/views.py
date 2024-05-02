@@ -5,6 +5,11 @@ from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import User, RequestPatient,PatientProfile, FamilyProfile, CareProfile
 from .forms import CareProfileForm, FamilyProfileForm, RegisterForm, UserEditForm
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
+from django.shortcuts import resolve_url
+from django.utils.decorators import method_decorator
+
 
 def register(request):
     if request.user.is_authenticated:
@@ -75,7 +80,6 @@ def request_patient(request):
         }
         return render(request, 'users/request/request.html', context)
 
-
 @login_required
 def patient_profile_edit(request):
     user = request.user
@@ -102,10 +106,26 @@ def family_profile_edit(request):
     user = request.user
     family_profile, created = FamilyProfile.objects.get_or_create(user=user)
 
-    relaciones_aprobadas = RequestPatient.objects.filter(
+    # Solicitudes donde el usuario es el solicitante.
+    solicitudes_propias = RequestPatient.objects.filter(
         solicitante=user, 
         estado=RequestPatient.ESTADO_ACEPTADO
     ).select_related('paciente')
+
+    # Solicitudes donde el usuario es el paciente.
+    pacientes_ids = RequestPatient.objects.filter(
+        paciente=user, 
+        estado=RequestPatient.ESTADO_ACEPTADO
+    ).values_list('solicitante_id', flat=True)
+
+    solicitudes_al_paciente = RequestPatient.objects.filter(
+        solicitante_id__in=pacientes_ids,
+        estado=RequestPatient.ESTADO_ACEPTADO
+    ).select_related('paciente')
+
+    # Combina las listas y elimina duplicados, si es necesario.
+    solicitudes = list(solicitudes_propias) + list(solicitudes_al_paciente)
+    # Si es posible que haya duplicados, puedes usar un enfoque más sofisticado para eliminarlos.
 
     if request.method == 'POST':
         form = FamilyProfileForm(request.POST, instance=family_profile)
@@ -118,8 +138,9 @@ def family_profile_edit(request):
 
     return render(request, 'users/profile/family_edit.html', {
         'form': form,
-        'relaciones_aprobadas': relaciones_aprobadas
+        'solicitudes': solicitudes  # Asegúrate de pasar las solicitudes combinadas aquí
     })
+
 
 @login_required
 def care_profile_edit(request):
@@ -185,9 +206,13 @@ def finish_request(request, solicitud_id):
     messages.success(request, 'La solicitud ha sido finalizada.')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', 'users:view_request'))
 
-def view_request(request):
+def family_view_request(request):
     solicitudes_usuario = RequestPatient.objects.filter(solicitante=request.user)
     return render(request, 'users/request/view_family.html', {'solicitudes': solicitudes_usuario})
+
+def view_request(request):
+    solicitudes_usuario = RequestPatient.objects.filter(solicitante=request.user)
+    return render(request, 'users/request/view_care.html', {'solicitudes': solicitudes_usuario})
 
 def logout_view(request):
     logout(request)
@@ -219,3 +244,22 @@ def patient_view_requests(request):
     return render(request, 'users/messages.html', {
         'open_requests_with_relationship': open_requests_with_relationship
     })
+
+@method_decorator(login_required, name='dispatch')
+class CustomPasswordChangeView(auth_views.PasswordChangeView):
+    template_name = 'users/profile/password_change.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Guardar la URL de referencia en la sesión cuando se carga el formulario
+        request.session['password_change_referrer'] = request.META.get('HTTP_REFERER', '/')
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # Agregar mensaje de éxito
+        messages.success(self.request, 'Tu contraseña ha sido cambiada exitosamente.')
+        return response
+
+    def get_success_url(self):
+        # Obtener la URL de referencia de la sesión
+        return self.request.session.pop('password_change_referrer', '/')

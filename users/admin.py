@@ -11,14 +11,32 @@ class ProfileAdmin(admin.ModelAdmin):
         (None, {'fields': ('user','celular', 'historial', 'fecha_nacimiento', 'encargado', 'alergias', 'enfermedades_base', 'cirugias', 'enfermedades_familiares','foto')}),
     )
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name')  # Ajusta los campos que quieras mostrar
-    search_fields = ('username', 'email')
+# Cambios aquí: Ahora heredando de BaseUserAdmin
+class UserAdmin(BaseUserAdmin):
+    form = UserChangeForm  # Usamos el formulario por defecto que incluye el cambio de contraseña
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')  # Agregamos 'is_staff' para más información
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    ordering = ('username',)
+    filter_horizontal = ('groups', 'user_permissions',)
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'password', 'email', 'first_name', 'last_name')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
 
 class RequestPatientAdmin(admin.ModelAdmin):
     list_display = ('solicitante', 'paciente', 'estado')
     search_fields = ('solicitante__username', 'paciente__username')
     list_filter = ('estado',)
+
 
 
 admin.site.register(User, UserAdmin)

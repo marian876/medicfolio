@@ -16,6 +16,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('usuarios/', include('users.urls')),
     path('calendario/', include('mycalendar.urls')),
+    path('mensajes/', include(('messaging.urls', 'messaging'), namespace='messaging')),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
